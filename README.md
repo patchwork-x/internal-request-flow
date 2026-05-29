@@ -8,6 +8,16 @@
 
 ---
 
+## デモURL
+
+https://internal-request-flow-app.vercel.app
+
+## GitHubリポジトリ
+
+https://github.com/patchwork-x/internal-request-flow
+
+---
+
 ## 作成背景
 
 社内SE的な業務や社内IT対応では、備品購入、アカウント発行、権限付与、経費申請などの依頼がメールやチャットに分散しやすく、以下のような課題が発生しやすいと考えました。
