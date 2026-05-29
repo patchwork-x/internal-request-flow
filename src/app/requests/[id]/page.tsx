@@ -30,6 +30,11 @@ type RequestRow = {
   due_date: string;
   created_at: string;
   updated_at: string;
+  approver: {
+    id: string;
+    name: string;
+    department: string | null;
+  } | null;
 };
 
 type AuditLogRow = {
@@ -110,7 +115,24 @@ export default async function RequestDetailPage({ params }: PageProps) {
   const { data: request, error } = await supabase
     .from("requests")
     .select(
-      "id, title, request_type, amount, reason, status, applicant_id, approver_id, due_date, created_at, updated_at"
+      `
+      id,
+      title,
+      request_type,
+      amount,
+      reason,
+      status,
+      applicant_id,
+      approver_id,
+      due_date,
+      created_at,
+      updated_at,
+      profiles:approver_id (
+        id,
+        name,
+        department
+      )
+    `
     )
     .eq("id", id)
     .single<RequestRow>();
@@ -145,6 +167,25 @@ export default async function RequestDetailPage({ params }: PageProps) {
       </main>
     );
   }
+
+  let approver = null;
+
+if (request.approver_id) {
+  const { data: approverProfile } = await supabase
+    .from("profiles")
+    .select("id, name, department")
+    .eq("id", request.approver_id)
+    .single();
+
+  approver = approverProfile;
+}
+
+const requestWithApprover = {
+  ...request,
+  approver,
+};
+
+const displayRequest = requestWithApprover;
 
   const { data: comments } = await supabase
     .from("request_comments")
@@ -205,8 +246,11 @@ export default async function RequestDetailPage({ params }: PageProps) {
                     value={getStatusLabel(request.status)}
                   />
                   <InfoItem label="申請者" value="未設定" />
-                  <InfoItem label="所属部署" value="未設定" />
-                  <InfoItem label="承認者" value="未設定" />
+                  <InfoItem label="承認者" value={requestWithApprover.approver?.name ?? "未設定"} />
+                  <InfoItem
+                    label="承認者部署"
+                    value={requestWithApprover.approver?.department ?? "未設定"}
+                  />
                   <InfoItem
                     label="金額"
                     value={

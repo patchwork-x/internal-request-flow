@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, CheckCircle2, Send } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
@@ -29,6 +29,13 @@ import {
   type RequestFormValues,
 } from "@/lib/validations/request";
 import { supabase } from "@/lib/supabase/client";
+type ApproverOption = {
+  id: string;
+  name: string;
+  role: string;
+  department: string | null;
+};
+
 const requestTypeOptions = [
   { value: "equipment", label: "備品購入申請" },
   { value: "saas_account", label: "SaaSアカウント発行申請" },
@@ -37,15 +44,11 @@ const requestTypeOptions = [
   { value: "expense", label: "経費申請" },
 ];
 
-const approverOptions = [
-  { value: "yamada", label: "山田 太郎" },
-  { value: "sato", label: "佐藤 健一" },
-  { value: "suzuki", label: "鈴木 美咲" },
-];
-
 export default function NewRequestPage() {
   const [submittedData, setSubmittedData] =
     useState<RequestFormValues | null>(null);
+
+  const [approverOptions, setApproverOptions] = useState<ApproverOption[]>([]);
 
   const {
     control,
@@ -70,7 +73,7 @@ export default function NewRequestPage() {
         values.amount && values.amount.trim() !== ""
           ? Number(values.amount)
           : null;
-        
+
       const { data: createdRequest, error: requestError } = await supabase
         .from("requests")
         .insert({
@@ -80,32 +83,53 @@ export default function NewRequestPage() {
           reason: values.reason,
           status: "submitted",
           due_date: values.dueDate,
+          approver_id: values.approver,
         })
         .select("id")
         .single();
-    
+
       if (requestError) {
         console.error(requestError);
         alert(`保存に失敗しました: ${requestError.message}`);
         return;
       }
-  
+
       const { error: logError } = await supabase.from("audit_logs").insert({
         request_id: createdRequest.id,
         action: "申請作成",
         detail: "新規申請を作成しました",
       });
-  
+
       if (logError) {
         console.error(logError);
         alert(
           `申請は保存されましたが、操作ログの保存に失敗しました: ${logError.message}`
         );
       }
-  
+
       setSubmittedData(values);
       reset();
     }
+
+    useEffect(() => {
+  async function fetchApprovers() {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id, name, role, department")
+      .in("role", ["approver", "admin"])
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      console.error(error);
+      alert(`承認者一覧の取得に失敗しました: ${error.message}`);
+      return;
+    }
+
+    setApproverOptions((data ?? []) as ApproverOption[]);
+  }
+
+  fetchApprovers();
+}, []);
 
   return (
     <main className="min-h-screen bg-muted/30 p-6">
@@ -238,9 +262,10 @@ export default function NewRequestPage() {
                         <SelectValue placeholder="承認者を選択" />
                       </SelectTrigger>
                       <SelectContent>
-                        {approverOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                        {approverOptions.map((approver) => (
+                          <SelectItem key={approver.id} value={approver.id}>
+                            {approver.name}
+                            {approver.department ? `（${approver.department}）` : ""}
                           </SelectItem>
                         ))}
                       </SelectContent>

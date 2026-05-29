@@ -7,7 +7,7 @@ import {
   RotateCcw,
   XCircle,
 } from "lucide-react";
-
+import { RequestTypeChart } from "@/components/dashboard/RequestTypeChart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -108,6 +108,39 @@ export default async function Home() {
 
   const latestRequests = requestRows.slice(0, 5);
 
+  const requestTypeChartData = [
+    {
+      name: "備品購入",
+      count: requestRows.filter(
+        (request) => request.request_type === "equipment"
+      ).length,
+    },
+    {
+      name: "SaaS",
+      count: requestRows.filter(
+        (request) => request.request_type === "saas_account"
+      ).length,
+    },
+    {
+      name: "権限付与",
+      count: requestRows.filter(
+        (request) => request.request_type === "permission"
+      ).length,
+    },
+    {
+      name: "PC購入",
+      count: requestRows.filter(
+        (request) => request.request_type === "pc_purchase"
+      ).length,
+    },
+    {
+      name: "経費",
+      count: requestRows.filter(
+        (request) => request.request_type === "expense"
+      ).length,
+    },
+  ];
+
   const statusCards = [
     {
       label: "申請中",
@@ -149,7 +182,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button asChild>
               <Link href="/requests/new">
                 申請を作成
@@ -158,6 +191,15 @@ export default async function Home() {
             </Button>
             <Button asChild variant="outline">
               <Link href="/requests">申請一覧を見る</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/admin/audit-logs">操作ログを見る</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/admin/users">ユーザー管理</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/login">ログイン画面</Link>
             </Button>
           </div>
         </section>
@@ -270,6 +312,16 @@ export default async function Home() {
                 <li>・コメント履歴、操作ログによる監査性の表現</li>
                 <li>・検索・絞り込みを備えた管理画面UI</li>
               </ul>
+            </CardContent>
+          </Card>
+        </section>
+        <section className="grid gap-4">
+          <Card className="rounded-2xl">
+            <CardHeader>
+              <CardTitle>申請種別ごとの件数</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RequestTypeChart data={requestTypeChartData} />
             </CardContent>
           </Card>
         </section>

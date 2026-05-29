@@ -11,12 +11,33 @@ import { supabase } from "@/lib/supabase/client";
 export default async function RequestsPage() {
   const { data: requests, error } = await supabase
     .from("requests")
-    .select("id, title, request_type, amount, reason, status, due_date, created_at")
+    .select(
+      "id, title, request_type, amount, reason, status, due_date, created_at, approver_id"
+    )
     .order("created_at", { ascending: false });
+
+  const { data: profiles, error: profilesError } = await supabase
+    .from("profiles")
+    .select("id, name, department");
 
   if (error) {
     console.error(error);
   }
+
+  if (profilesError) {
+    console.error(profilesError);
+  }
+
+  const requestRows = (requests ?? []).map((request) => {
+    const approver = (profiles ?? []).find(
+      (profile) => profile.id === request.approver_id
+    );
+
+    return {
+      ...request,
+      approver: approver ?? null,
+    };
+  });
 
   return (
     <main className="min-h-screen bg-muted/30 p-6">
@@ -45,7 +66,13 @@ export default async function RequestsPage() {
           </div>
         )}
 
-        <RequestsTable requests={(requests ?? []) as RequestRow[]} />
+        {profilesError && (
+          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+            承認者情報の取得に失敗しました: {profilesError.message}
+          </div>
+        )}
+
+        <RequestsTable requests={requestRows as RequestRow[]} />
       </div>
     </main>
   );

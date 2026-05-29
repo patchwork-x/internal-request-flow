@@ -29,6 +29,12 @@ export type RequestRow = {
   status: string;
   due_date: string;
   created_at: string;
+  approver_id: string | null;
+  approver: {
+    id: string;
+    name: string;
+    department: string | null;
+  } | null;
 };
 
 type RequestsTableProps = {
@@ -109,6 +115,8 @@ function downloadCsv(requests: RequestRow[]) {
     "ID",
     "タイトル",
     "申請種別",
+    "承認者",
+    "所属部署",
     "金額",
     "ステータス",
     "申請日",
@@ -119,6 +127,8 @@ function downloadCsv(requests: RequestRow[]) {
     request.id,
     request.title,
     getRequestTypeLabel(request.request_type),
+    request.approver?.name ?? "未設定",
+    request.approver?.department ?? "未設定",
     request.amount,
     getStatusLabel(request.status),
     formatDate(request.created_at),
@@ -250,6 +260,8 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                 <th className="px-4 py-3 text-left font-medium">ID</th>
                 <th className="px-4 py-3 text-left font-medium">タイトル</th>
                 <th className="px-4 py-3 text-left font-medium">種別</th>
+                <th className="px-4 py-3 text-left font-medium">承認者</th>
+                <th className="px-4 py-3 text-left font-medium">所属部署</th>
                 <th className="px-4 py-3 text-left font-medium">金額</th>
                 <th className="px-4 py-3 text-left font-medium">
                   ステータス
@@ -268,6 +280,12 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                   <td className="px-4 py-3">{request.title}</td>
                   <td className="px-4 py-3">
                     {getRequestTypeLabel(request.request_type)}
+                  </td>
+                  <td className="px-4 py-3">
+                    {request.approver?.name ?? "未設定"}
+                  </td>
+                  <td className="px-4 py-3">
+                    {request.approver?.department ?? "未設定"}
                   </td>
                   <td className="px-4 py-3">
                     {request.amount
@@ -296,7 +314,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
               {filteredRequests.length === 0 && (
                 <tr>
                   <td
-                    colSpan={8}
+                    colSpan={10}
                     className="px-4 py-10 text-center text-muted-foreground"
                   >
                     条件に一致する申請データがありません。
