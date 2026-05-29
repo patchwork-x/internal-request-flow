@@ -30,11 +30,6 @@ type RequestRow = {
   due_date: string;
   created_at: string;
   updated_at: string;
-  approver: {
-    id: string;
-    name: string;
-    department: string | null;
-  } | null;
 };
 
 type AuditLogRow = {
@@ -113,29 +108,12 @@ export default async function RequestDetailPage({ params }: PageProps) {
   const { id } = await params;
 
   const { data: request, error } = await supabase
-    .from("requests")
-    .select(
-      `
-      id,
-      title,
-      request_type,
-      amount,
-      reason,
-      status,
-      applicant_id,
-      approver_id,
-      due_date,
-      created_at,
-      updated_at,
-      profiles:approver_id (
-        id,
-        name,
-        department
-      )
-    `
-    )
-    .eq("id", id)
-    .single<RequestRow>();
+  .from("requests")
+  .select(
+    "id, title, request_type, amount, reason, status, applicant_id, approver_id, due_date, created_at, updated_at"
+  )
+  .eq("id", id)
+  .single<RequestRow>();
 
   if (error || !request) {
     return (
@@ -168,14 +146,22 @@ export default async function RequestDetailPage({ params }: PageProps) {
     );
   }
 
-  let approver = null;
+let approver: {
+  id: string;
+  name: string;
+  department: string | null;
+} | null = null;
 
 if (request.approver_id) {
-  const { data: approverProfile } = await supabase
+  const { data: approverProfile, error: approverError } = await supabase
     .from("profiles")
     .select("id, name, department")
     .eq("id", request.approver_id)
     .single();
+
+  if (approverError) {
+    console.error(approverError);
+  }
 
   approver = approverProfile;
 }

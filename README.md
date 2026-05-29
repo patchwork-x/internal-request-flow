@@ -31,6 +31,38 @@
 
 ---
 
+## スクリーンショット
+
+### ダッシュボード
+
+![ダッシュボード](public/screenshots/dashboard.png)
+
+### 申請一覧
+
+![申請一覧](public/screenshots/requests.png)
+
+### 新規申請作成
+
+![新規申請作成](public/screenshots/new-request.png)
+
+### 申請詳細
+
+![申請詳細](public/screenshots/request-detail.png)
+
+### ユーザー管理
+
+![ユーザー管理](public/screenshots/admin-users.png)
+
+### 操作ログ一覧
+
+![操作ログ一覧](public/screenshots/audit-logs.png)
+
+### 簡易ログイン画面
+
+![簡易ログイン画面](public/screenshots/login.png)
+
+---
+
 ## 主な機能
 
 ### ダッシュボード
