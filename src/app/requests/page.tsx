@@ -1,0 +1,52 @@
+import Link from "next/link";
+import { Plus } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  RequestsTable,
+  type RequestRow,
+} from "@/components/requests/RequestsTable";
+import { supabase } from "@/lib/supabase/client";
+
+export default async function RequestsPage() {
+  const { data: requests, error } = await supabase
+    .from("requests")
+    .select("id, title, request_type, amount, reason, status, due_date, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+  }
+
+  return (
+    <main className="min-h-screen bg-muted/30 p-6">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6">
+        <section className="flex flex-col gap-4 rounded-2xl bg-background p-6 shadow-sm">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">申請一覧</h1>
+              <p className="mt-2 text-muted-foreground">
+                Supabaseに保存された社内申請データを一覧で確認できます。
+              </p>
+            </div>
+
+            <Button asChild>
+              <Link href="/requests/new">
+                <Plus className="size-4" />
+                新規申請
+              </Link>
+            </Button>
+          </div>
+        </section>
+
+        {error && (
+          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+            データの取得に失敗しました: {error.message}
+          </div>
+        )}
+
+        <RequestsTable requests={(requests ?? []) as RequestRow[]} />
+      </div>
+    </main>
+  );
+}
