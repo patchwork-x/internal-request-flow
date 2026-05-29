@@ -165,9 +165,10 @@ export default async function Home() {
   ];
 
   return (
-    <main className="min-h-screen bg-muted/30 p-6">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6">
-        <section className="flex flex-col gap-3 rounded-2xl bg-background p-6 shadow-sm">
+    <main className="min-h-screen px-6 py-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6">
+        <section className="relative overflow-hidden rounded-3xl border bg-background/80 p-8 shadow-sm">
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-sky-400 to-cyan-300" />
           <Badge className="w-fit" variant="secondary">
             Internal Request Flow
           </Badge>
@@ -231,7 +232,7 @@ export default async function Home() {
         </section>
 
         <section className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-          <Card className="rounded-2xl">
+          <Card className="rounded-3xl border bg-background/80 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="size-5" />
@@ -300,7 +301,7 @@ export default async function Home() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl">
+          <Card className="rounded-3xl border bg-background/80 shadow-sm">
             <CardHeader>
               <CardTitle>このアプリで見せるスキル</CardTitle>
             </CardHeader>
@@ -316,7 +317,7 @@ export default async function Home() {
           </Card>
         </section>
         <section className="grid gap-4">
-          <Card className="rounded-2xl">
+          <Card className="rounded-3xl border bg-background/80 shadow-sm">
             <CardHeader>
               <CardTitle>申請種別ごとの件数</CardTitle>
             </CardHeader>

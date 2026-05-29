@@ -5,9 +5,12 @@ import {
   Gauge,
   History,
   LogIn,
+  Sparkles,
+  UserPlus,
   Users,
 } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
@@ -41,22 +44,48 @@ const navItems = [
     label: "ログイン",
     icon: LogIn,
   },
+  {
+    href: "/signup",
+    label: "アカウント作成",
+    icon: UserPlus,
+  },
 ];
 
 export function AppNav() {
   return (
-    <nav className="border-b bg-background">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-4 md:flex-row md:items-center md:justify-between">
-        <Link href="/" className="font-bold tracking-tight">
-          Internal Request Flow
+    <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
+        <Link href="/" className="group flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm transition group-hover:scale-105">
+            <Sparkles className="size-5" />
+          </div>
+
+          <div className="leading-tight">
+            <div className="font-bold tracking-tight">
+              Internal Request Flow
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Approval workflow dashboard
+            </div>
+          </div>
         </Link>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="secondary" className="hidden rounded-full px-3 py-1 lg:inline-flex">
+            Portfolio App
+          </Badge>
+
           {navItems.map((item) => {
             const Icon = item.icon;
 
             return (
-              <Button key={item.href} asChild variant="ghost" size="sm">
+              <Button
+                key={item.href}
+                asChild
+                variant="ghost"
+                size="sm"
+                className="rounded-full text-muted-foreground hover:text-foreground"
+              >
                 <Link href={item.href}>
                   <Icon className="size-4" />
                   {item.label}
@@ -66,6 +95,6 @@ export function AppNav() {
           })}
         </div>
       </div>
-    </nav>
+    </header>
   );
 }
