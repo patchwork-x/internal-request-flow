@@ -18,7 +18,7 @@ export async function createSupabaseServerClient() {
               cookieStore.set(name, value, options);
             });
           } catch {
-            // Server Componentから呼ばれた場合はsetできないことがあるため無視
+            // Server Componentから呼ばれた場合は無視
           }
         },
       },

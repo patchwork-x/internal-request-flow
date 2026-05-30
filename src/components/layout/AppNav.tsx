@@ -12,6 +12,8 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { LogoutButton } from "@/components/layout/LogoutButton";
 
 const navItems = [
   {
@@ -39,19 +41,46 @@ const navItems = [
     label: "操作ログ",
     icon: History,
   },
-  {
-    href: "/login",
-    label: "ログイン",
-    icon: LogIn,
-  },
-  {
-    href: "/signup",
-    label: "アカウント作成",
-    icon: UserPlus,
-  },
 ];
 
-export function AppNav() {
+function getRoleLabel(role: string | null | undefined) {
+  switch (role) {
+    case "applicant":
+      return "申請者";
+    case "approver":
+      return "承認者";
+    case "admin":
+      return "管理者";
+    default:
+      return "未設定";
+  }
+}
+
+export async function AppNav() {
+  const supabase = await createSupabaseServerClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let profile:
+    | {
+        name: string;
+        role: string;
+        department: string | null;
+      }
+    | null = null;
+
+  if (user) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("name, role, department")
+      .eq("id", user.id)
+      .single();
+
+    profile = data;
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
@@ -71,7 +100,10 @@ export function AppNav() {
         </Link>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary" className="hidden rounded-full px-3 py-1 lg:inline-flex">
+          <Badge
+            variant="secondary"
+            className="hidden rounded-full px-3 py-1 lg:inline-flex"
+          >
             Portfolio App
           </Badge>
 
@@ -93,6 +125,46 @@ export function AppNav() {
               </Button>
             );
           })}
+
+          {user ? (
+            <div className="flex flex-wrap items-center gap-2 rounded-full border bg-background px-3 py-1.5 shadow-sm">
+              <div className="text-sm">
+                <span className="font-medium">
+                  {profile?.name ?? user.email}
+                </span>
+                <span className="ml-2 text-muted-foreground">
+                  {getRoleLabel(profile?.role)}
+                </span>
+              </div>
+              <LogoutButton />
+            </div>
+          ) : (
+            <>
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="rounded-full text-muted-foreground hover:text-foreground"
+              >
+                <Link href="/login">
+                  <LogIn className="size-4" />
+                  ログイン
+                </Link>
+              </Button>
+
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="rounded-full text-muted-foreground hover:text-foreground"
+              >
+                <Link href="/signup">
+                  <UserPlus className="size-4" />
+                  アカウント作成
+                </Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

@@ -28,7 +28,7 @@ import {
   requestFormSchema,
   type RequestFormValues,
 } from "@/lib/validations/request";
-import { supabase } from "@/lib/supabase/client";
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 type ApproverOption = {
   id: string;
   name: string;
@@ -45,6 +45,8 @@ const requestTypeOptions = [
 ];
 
 export default function NewRequestPage() {
+  const supabase = createSupabaseBrowserClient();
+  
   const [submittedData, setSubmittedData] =
     useState<RequestFormValues | null>(null);
 
@@ -69,6 +71,16 @@ export default function NewRequestPage() {
   });
 
     async function onSubmit(values: RequestFormValues) {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        alert("ログイン情報を取得できませんでした。再ログインしてください。");
+        return;
+      }
+
       const amount =
         values.amount && values.amount.trim() !== ""
           ? Number(values.amount)
@@ -83,6 +95,7 @@ export default function NewRequestPage() {
           reason: values.reason,
           status: "submitted",
           due_date: values.dueDate,
+          applicant_id: user.id,
           approver_id: values.approver,
         })
         .select("id")
