@@ -12,7 +12,7 @@ export default async function RequestsPage() {
   const { data: requests, error } = await supabase
     .from("requests")
     .select(
-      "id, title, request_type, amount, reason, status, due_date, created_at, approver_id"
+      "id, title, request_type, amount, reason, status, due_date, created_at, applicant_id, approver_id"
     )
     .order("created_at", { ascending: false });
 
@@ -29,12 +29,17 @@ export default async function RequestsPage() {
   }
 
   const requestRows = (requests ?? []).map((request) => {
+    const applicant = (profiles ?? []).find(
+      (profile) => profile.id === request.applicant_id
+    );
+
     const approver = (profiles ?? []).find(
       (profile) => profile.id === request.approver_id
     );
 
     return {
       ...request,
+      applicant: applicant ?? null,
       approver: approver ?? null,
     };
   });

@@ -152,6 +152,26 @@ let approver: {
   department: string | null;
 } | null = null;
 
+let applicant: {
+  id: string;
+  name: string;
+  department: string | null;
+} | null = null;
+
+if (request.applicant_id) {
+  const { data: applicantProfile, error: applicantError } = await supabase
+    .from("profiles")
+    .select("id, name, department")
+    .eq("id", request.applicant_id)
+    .single();
+
+  if (applicantError) {
+    console.error(applicantError);
+  }
+
+  applicant = applicantProfile;
+}
+
 if (request.approver_id) {
   const { data: approverProfile, error: approverError } = await supabase
     .from("profiles")
@@ -242,11 +262,15 @@ const displayRequest = requestWithApprover;
                     label="ステータス"
                     value={getStatusLabel(request.status)}
                   />
-                  <InfoItem label="申請者" value="未設定" />
-                  <InfoItem label="承認者" value={requestWithApprover.approver?.name ?? "未設定"} />
+                  <InfoItem label="申請者" value={applicant?.name ?? "未設定"} />
+                  <InfoItem
+                    label="申請者部署"
+                    value={applicant?.department ?? "未設定"}
+                  />
+                  <InfoItem label="承認者" value={approver?.name ?? "未設定"} />
                   <InfoItem
                     label="承認者部署"
-                    value={requestWithApprover.approver?.department ?? "未設定"}
+                    value={approver?.department ?? "未設定"}
                   />
                   <InfoItem
                     label="金額"

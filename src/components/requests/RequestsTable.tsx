@@ -29,7 +29,13 @@ export type RequestRow = {
   status: string;
   due_date: string;
   created_at: string;
+  applicant_id: string | null;
   approver_id: string | null;
+  applicant: {
+    id: string;
+    name: string;
+    department: string | null;
+  } | null;
   approver: {
     id: string;
     name: string;
@@ -115,8 +121,10 @@ function downloadCsv(requests: RequestRow[]) {
     "ID",
     "タイトル",
     "申請種別",
+    "申請者",
+    "申請者部署",
     "承認者",
-    "所属部署",
+    "承認者部署",
     "金額",
     "ステータス",
     "申請日",
@@ -127,6 +135,8 @@ function downloadCsv(requests: RequestRow[]) {
     request.id,
     request.title,
     getRequestTypeLabel(request.request_type),
+    request.applicant?.name ?? "未設定",
+    request.applicant?.department ?? "未設定",
     request.approver?.name ?? "未設定",
     request.approver?.department ?? "未設定",
     request.amount,
@@ -267,8 +277,10 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                 <th className="px-4 py-3 text-left font-medium">ID</th>
                 <th className="px-4 py-3 text-left font-medium">タイトル</th>
                 <th className="px-4 py-3 text-left font-medium">種別</th>
+                <th className="px-4 py-3 text-left font-medium">申請者</th>
+                <th className="px-4 py-3 text-left font-medium">申請者部署</th>
                 <th className="px-4 py-3 text-left font-medium">承認者</th>
-                <th className="px-4 py-3 text-left font-medium">所属部署</th>
+                <th className="px-4 py-3 text-left font-medium">承認者部署</th>
                 <th className="px-4 py-3 text-right font-medium">金額</th>
                 <th className="px-4 py-3 text-left font-medium">
                   ステータス
@@ -296,6 +308,12 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                   </td>
                   <td className="px-4 py-3">
                     {getRequestTypeLabel(request.request_type)}
+                  </td>
+                  <td className="px-4 py-3">
+                    {request.applicant?.name ?? "未設定"}
+                  </td>
+                  <td className="px-4 py-3">
+                    {request.applicant?.department ?? "未設定"}
                   </td>
                   <td className="px-4 py-3">
                     {request.approver?.name ?? "未設定"}
@@ -330,7 +348,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
               {filteredRequests.length === 0 && (
                 <tr>
                   <td
-                    colSpan={10}
+                    colSpan={12}
                     className="px-4 py-10 text-center text-muted-foreground"
                   >
                     条件に一致する申請データがありません。
