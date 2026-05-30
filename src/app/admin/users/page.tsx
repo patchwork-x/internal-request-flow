@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Users } from "lucide-react";
-
+import { UserActions } from "@/components/admin/UserActions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +17,7 @@ type ProfileRow = {
   role: string;
   department: string | null;
   created_at: string;
+  email?: string | null;
 };
 
 function getRoleLabel(role: string) {
@@ -106,9 +107,8 @@ export default async function AdminUsersPage() {
                     <th className="px-4 py-3 text-left font-medium">氏名</th>
                     <th className="px-4 py-3 text-left font-medium">権限</th>
                     <th className="px-4 py-3 text-left font-medium">部署</th>
-                    <th className="px-4 py-3 text-left font-medium">
-                      登録日
-                    </th>
+                    <th className="px-4 py-3 text-left font-medium">登録日</th>
+                    <th className="px-4 py-3 text-left font-medium">操作</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -129,13 +129,24 @@ export default async function AdminUsersPage() {
                       <td className="px-4 py-3 text-muted-foreground">
                         {formatDate(profile.created_at)}
                       </td>
+                      <td className="px-4 py-3">
+                        <UserActions
+                          user={{
+                            id: profile.id,
+                            email: profile.email ?? "",
+                            name: profile.name,
+                            role: profile.role,
+                            department: profile.department,
+                          }}
+                        />
+                      </td>
                     </tr>
                   ))}
 
                   {(!profiles || profiles.length === 0) && (
                     <tr>
                       <td
-                        colSpan={5}
+                        colSpan={6}
                         className="px-4 py-10 text-center text-muted-foreground"
                       >
                         ユーザー情報がありません。
