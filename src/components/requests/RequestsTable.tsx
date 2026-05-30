@@ -176,18 +176,25 @@ export function RequestsTable({ requests }: RequestsTableProps) {
   }, [requests, keyword, statusFilter, typeFilter]);
 
   return (
-    <Card className="rounded-2xl">
-      <CardHeader>
+    <Card className="overflow-hidden rounded-3xl border bg-background/80 shadow-sm">
+      <CardHeader className="border-b bg-muted/20">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-          <CardTitle>申請データ</CardTitle>
-          <div className="text-sm text-muted-foreground">
+          <div>
+            <CardTitle className="text-xl">申請データ</CardTitle>
+            <p className="mt-1 text-sm text-muted-foreground">
+              社内申請のステータス、承認者、期限を一覧で確認できます。
+            </p>
+          </div>
+        
+          <div className="rounded-full bg-background px-4 py-2 text-sm text-muted-foreground shadow-sm">
             {filteredRequests.length}件 / 全{requests.length}件
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="grid gap-4">
-        <div className="grid gap-3 lg:grid-cols-[1fr_220px_220px_auto]">          <div className="relative">
+        <div className="grid gap-3 rounded-2xl border bg-muted/20 p-4 lg:grid-cols-[1fr_220px_220px_auto]">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={keyword}
@@ -253,7 +260,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
             </div>
         </div>
 
-        <div className="overflow-hidden rounded-xl border">
+        <div className="overflow-hidden rounded-2xl border bg-background">
           <table className="w-full text-sm">
             <thead className="bg-muted">
               <tr>
