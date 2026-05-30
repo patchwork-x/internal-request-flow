@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { CreateUserForm } from "@/components/admin/CreateUserForm";
 
 type ProfileRow = {
   id: string;
@@ -166,6 +167,21 @@ export default async function AdminUsersPage() {
             </div>
           </section>
         </div>
+
+        <Card className="overflow-hidden rounded-3xl border bg-background/80 shadow-sm">
+          <CardHeader className="border-b bg-muted/20">
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <Users className="size-5" />
+              新規ユーザー作成
+            </CardTitle>
+            <p className="mt-1 text-sm text-muted-foreground">
+              管理者権限で、申請者・承認者・管理者アカウントを作成できます。
+            </p>
+          </CardHeader>
+          <CardContent className="p-6">
+            <CreateUserForm />
+          </CardContent>
+        </Card>
 
         <Card className="overflow-hidden rounded-3xl border bg-background/80 shadow-sm">
           <CardHeader className="border-b bg-muted/20">
