@@ -33,6 +33,14 @@ const navItems = [
     icon: FilePlus2,
   },
   {
+    href: "/account",
+    label: "マイページ",
+    icon: UserRound,
+  },
+];
+
+const adminNavItems = [
+  {
     href: "/admin/users",
     label: "ユーザー管理",
     icon: Users,
@@ -41,11 +49,6 @@ const navItems = [
     href: "/admin/audit-logs",
     label: "操作ログ",
     icon: History,
-  },
-  {
-    href: "/account",
-    label: "マイページ",
-    icon: UserRound,
   },
 ];
 
@@ -131,6 +134,26 @@ export async function AppNav() {
               </Button>
             );
           })}
+
+          {profile?.role === "admin" &&
+            adminNavItems.map((item) => {
+              const Icon = item.icon;
+            
+              return (
+                <Button
+                  key={item.href}
+                  asChild
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-full text-muted-foreground hover:text-foreground"
+                >
+                  <Link href={item.href}>
+                    <Icon className="size-4" />
+                    {item.label}
+                  </Link>
+                </Button>
+              );
+            })}
 
           {user ? (
             <div className="flex flex-wrap items-center gap-2 rounded-full border bg-background px-3 py-1.5 shadow-sm">

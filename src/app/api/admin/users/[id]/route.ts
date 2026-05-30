@@ -3,14 +3,6 @@ import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-type UpdateUserPayload = {
-  name?: string;
-  department?: string;
-  role?: "applicant" | "approver" | "admin";
-  email?: string;
-  password?: string;
-};
-
 async function assertAdmin() {
   const supabase = await createSupabaseServerClient();
 
@@ -48,124 +40,51 @@ async function assertAdmin() {
   return { ok: true as const };
 }
 
-export async function PATCH(
-  request: Request,
-  context: { params: Promise<{ id: string }> }
-) {
+export async function GET() {
   const adminCheck = await assertAdmin();
 
   if (!adminCheck.ok) {
     return adminCheck.response;
   }
 
-  const { id } = await context.params;
-  const body = (await request.json()) as UpdateUserPayload;
-
   const supabaseAdmin = createSupabaseAdminClient();
 
-  const authAttributes: {
-    email?: string;
-    password?: string;
-    user_metadata?: Record<string, string | undefined>;
-  } = {};
+  const { data: profiles, error: profilesError } = await supabaseAdmin
+    .from("profiles")
+    .select("id, name, role, department, created_at")
+    .order("created_at", { ascending: false });
 
-  if (body.email) {
-    authAttributes.email = body.email;
+  if (profilesError) {
+    return NextResponse.json(
+      { message: profilesError.message },
+      { status: 400 }
+    );
   }
 
-  if (body.password) {
-    authAttributes.password = body.password;
+  const { data: usersData, error: usersError } =
+    await supabaseAdmin.auth.admin.listUsers();
+
+  if (usersError) {
+    return NextResponse.json(
+      { message: usersError.message },
+      { status: 400 }
+    );
   }
 
-  if (body.name || body.department || body.role) {
-    authAttributes.user_metadata = {
-      name: body.name,
-      department: body.department,
-      role: body.role,
+  const users = (profiles ?? []).map((profile) => {
+    const authUser = usersData.users.find((user) => user.id === profile.id);
+
+    return {
+      id: profile.id,
+      name: profile.name,
+      role: profile.role,
+      department: profile.department,
+      created_at: profile.created_at,
+      email: authUser?.email ?? null,
+      last_sign_in_at: authUser?.last_sign_in_at ?? null,
+      email_confirmed_at: authUser?.email_confirmed_at ?? null,
     };
-  }
+  });
 
-  if (Object.keys(authAttributes).length > 0) {
-    const { error: authError } =
-      await supabaseAdmin.auth.admin.updateUserById(id, authAttributes);
-
-    if (authError) {
-      return NextResponse.json(
-        { message: authError.message },
-        { status: 400 }
-      );
-    }
-  }
-
-  const profileUpdate: {
-    name?: string;
-    department?: string;
-    role?: "applicant" | "approver" | "admin";
-    updated_at: string;
-  } = {
-    updated_at: new Date().toISOString(),
-  };
-
-  if (body.name !== undefined) {
-    profileUpdate.name = body.name;
-  }
-
-  if (body.department !== undefined) {
-    profileUpdate.department = body.department;
-  }
-
-  if (body.role !== undefined) {
-    profileUpdate.role = body.role;
-  }
-
-  const { error: profileError } = await supabaseAdmin
-    .from("profiles")
-    .update(profileUpdate)
-    .eq("id", id);
-
-  if (profileError) {
-    return NextResponse.json(
-      { message: profileError.message },
-      { status: 400 }
-    );
-  }
-
-  return NextResponse.json({ message: "ユーザー情報を更新しました" });
-}
-
-export async function DELETE(
-  request: Request,
-  context: { params: Promise<{ id: string }> }
-) {
-  const adminCheck = await assertAdmin();
-
-  if (!adminCheck.ok) {
-    return adminCheck.response;
-  }
-
-  const { id } = await context.params;
-  const supabaseAdmin = createSupabaseAdminClient();
-
-  const { error: profileError } = await supabaseAdmin
-    .from("profiles")
-    .delete()
-    .eq("id", id);
-
-  if (profileError) {
-    return NextResponse.json(
-      { message: profileError.message },
-      { status: 400 }
-    );
-  }
-
-  const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(id);
-
-  if (authError) {
-    return NextResponse.json(
-      { message: authError.message },
-      { status: 400 }
-    );
-  }
-
-  return NextResponse.json({ message: "ユーザーを削除しました" });
+  return NextResponse.json({ users });
 }

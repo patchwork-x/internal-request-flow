@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Users } from "lucide-react";
+
 import { UserActions } from "@/components/admin/UserActions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { supabase } from "@/lib/supabase/client";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type ProfileRow = {
   id: string;
@@ -17,7 +19,9 @@ type ProfileRow = {
   role: string;
   department: string | null;
   created_at: string;
-  email?: string | null;
+  email: string | null;
+  last_sign_in_at: string | null;
+  email_confirmed_at: string | null;
 };
 
 function getRoleLabel(role: string) {
@@ -48,23 +52,96 @@ function getRoleVariant(
   }
 }
 
-function formatDate(value: string) {
-  return new Date(value).toLocaleDateString("ja-JP");
+function formatDate(value: string | null) {
+  if (!value) return "-";
+  return new Date(value).toLocaleString("ja-JP");
 }
 
-export default async function AdminUsersPage() {
-  const { data: profiles, error } = await supabase
+async function getCurrentUserRole() {
+  const supabase = await createSupabaseServerClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  return profile?.role ?? null;
+}
+
+async function getUsers(): Promise<ProfileRow[]> {
+  const supabaseAdmin = createSupabaseAdminClient();
+
+  const { data: profiles, error: profilesError } = await supabaseAdmin
     .from("profiles")
     .select("id, name, role, department, created_at")
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error(error);
+  if (profilesError) {
+    console.error(profilesError);
+    return [];
   }
 
+  const { data: usersData, error: usersError } =
+    await supabaseAdmin.auth.admin.listUsers();
+
+  if (usersError) {
+    console.error(usersError);
+    return [];
+  }
+
+  return (profiles ?? []).map((profile) => {
+    const authUser = usersData.users.find((user) => user.id === profile.id);
+
+    return {
+      id: profile.id,
+      name: profile.name,
+      role: profile.role,
+      department: profile.department,
+      created_at: profile.created_at,
+      email: authUser?.email ?? null,
+      last_sign_in_at: authUser?.last_sign_in_at ?? null,
+      email_confirmed_at: authUser?.email_confirmed_at ?? null,
+    };
+  });
+}
+
+export default async function AdminUsersPage() {
+  const currentUserRole = await getCurrentUserRole();
+
+  if (currentUserRole !== "admin") {
+    return (
+      <main className="min-h-screen px-6 py-8">
+        <div className="mx-auto max-w-3xl">
+          <Card className="rounded-3xl border bg-background/80 shadow-sm">
+            <CardHeader>
+              <CardTitle>管理者権限が必要です</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <p className="text-muted-foreground">
+                ユーザー管理画面を表示するには、管理者権限でログインしてください。
+              </p>
+              <Button asChild className="w-fit">
+                <Link href="/">ダッシュボードへ戻る</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    );
+  }
+
+  const users = await getUsers();
+
   return (
-    <main className="min-h-screen bg-muted/30 p-6">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6">
+    <main className="min-h-screen px-6 py-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6">
         <div>
           <Button asChild variant="ghost" className="mb-4">
             <Link href="/">
@@ -73,103 +150,135 @@ export default async function AdminUsersPage() {
             </Link>
           </Button>
 
-          <div className="flex flex-col gap-2">
-            <Badge className="w-fit" variant="secondary">
-              Admin
-            </Badge>
-            <h1 className="text-3xl font-bold tracking-tight">ユーザー管理</h1>
-            <p className="text-muted-foreground">
-              申請者・承認者・管理者の権限と所属部署を一覧で確認できます。
-            </p>
-          </div>
+          <section className="relative overflow-hidden rounded-3xl border bg-background/80 p-8 shadow-sm">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-sky-400 to-cyan-300" />
+
+            <div className="flex flex-col gap-2">
+              <Badge className="w-fit rounded-full" variant="secondary">
+                Admin
+              </Badge>
+              <h1 className="text-3xl font-bold tracking-tight">
+                ユーザー管理
+              </h1>
+              <p className="text-muted-foreground">
+                申請者・承認者・管理者のアカウント情報を管理できます。
+              </p>
+            </div>
+          </section>
         </div>
 
-        {error && (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
-            ユーザー情報の取得に失敗しました: {error.message}
-          </div>
-        )}
+        <Card className="overflow-hidden rounded-3xl border bg-background/80 shadow-sm">
+          <CardHeader className="border-b bg-muted/20">
+            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+              <div>
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <Users className="size-5" />
+                  ユーザー一覧
+                </CardTitle>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  メールアドレス、権限、部署、最終ログイン日時を確認できます。
+                </p>
+              </div>
 
-        <Card className="rounded-2xl">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="size-5" />
-              ユーザー一覧
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent>
-            <div className="overflow-hidden rounded-xl border">
-              <table className="w-full text-sm">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-medium">ID</th>
-                    <th className="px-4 py-3 text-left font-medium">氏名</th>
-                    <th className="px-4 py-3 text-left font-medium">権限</th>
-                    <th className="px-4 py-3 text-left font-medium">部署</th>
-                    <th className="px-4 py-3 text-left font-medium">登録日</th>
-                    <th className="px-4 py-3 text-left font-medium">操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(profiles as ProfileRow[] | null)?.map((profile) => (
-                    <tr key={profile.id} className="border-t">
-                      <td className="px-4 py-3 font-medium">
-                        {profile.id.slice(0, 8)}
-                      </td>
-                      <td className="px-4 py-3">{profile.name}</td>
-                      <td className="px-4 py-3">
-                        <Badge variant={getRoleVariant(profile.role)}>
-                          {getRoleLabel(profile.role)}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3">
-                        {profile.department ?? "-"}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">
-                        {formatDate(profile.created_at)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <UserActions
-                          user={{
-                            id: profile.id,
-                            email: profile.email ?? "",
-                            name: profile.name,
-                            role: profile.role,
-                            department: profile.department,
-                          }}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-
-                  {(!profiles || profiles.length === 0) && (
-                    <tr>
-                      <td
-                        colSpan={6}
-                        className="px-4 py-10 text-center text-muted-foreground"
-                      >
-                        ユーザー情報がありません。
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+              <div className="rounded-full bg-background px-4 py-2 text-sm text-muted-foreground shadow-sm">
+                {users.length}件
+              </div>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-2xl">
-          <CardHeader>
-            <CardTitle>この画面で見せるスキル</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>・ユーザー権限を想定した管理画面設計</li>
-              <li>・申請者・承認者・管理者のロール設計</li>
-              <li>・Supabaseのprofilesテーブル取得</li>
-              <li>・今後のログイン機能・RLS対応への拡張性</li>
-            </ul>
+
+          <CardContent className="p-6">
+            <div className="overflow-x-auto">
+              <div className="overflow-hidden rounded-2xl border bg-background">
+                <table className="w-full min-w-[1200px] text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-medium">ID</th>
+                      <th className="px-4 py-3 text-left font-medium">氏名</th>
+                      <th className="px-4 py-3 text-left font-medium">
+                        メール
+                      </th>
+                      <th className="px-4 py-3 text-left font-medium">権限</th>
+                      <th className="px-4 py-3 text-left font-medium">部署</th>
+                      <th className="px-4 py-3 text-left font-medium">
+                        メール確認
+                      </th>
+                      <th className="px-4 py-3 text-left font-medium">
+                        最終ログイン
+                      </th>
+                      <th className="px-4 py-3 text-left font-medium">
+                        操作
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {users.map((user) => (
+                      <tr
+                        key={user.id}
+                        className="border-t transition-colors hover:bg-muted/30"
+                      >
+                        <td className="px-4 py-3">
+                          <span className="rounded-full bg-muted px-2.5 py-1 font-mono text-xs">
+                            {user.id.slice(0, 8)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 font-medium">{user.name}</td>
+                        <td className="px-4 py-3 text-muted-foreground">
+                          {user.email ?? "-"}
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge
+                            variant={getRoleVariant(user.role)}
+                            className="rounded-full"
+                          >
+                            {getRoleLabel(user.role)}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3">
+                          {user.department ?? "-"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {user.email_confirmed_at ? (
+                            <Badge variant="secondary" className="rounded-full">
+                              確認済み
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="rounded-full">
+                              未確認
+                            </Badge>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-muted-foreground">
+                          {formatDate(user.last_sign_in_at)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <UserActions
+                            user={{
+                              id: user.id,
+                              email: user.email,
+                              name: user.name,
+                              role: user.role,
+                              department: user.department,
+                            }}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+
+                    {users.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan={8}
+                          className="px-4 py-10 text-center text-muted-foreground"
+                        >
+                          ユーザー情報がありません。
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
