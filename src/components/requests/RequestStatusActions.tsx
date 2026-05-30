@@ -3,13 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CheckCircle2, RotateCcw, XCircle } from "lucide-react";
-
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabase/client";
 
 type RequestStatusActionsProps = {
   requestId: string;
 };
+
 
 const actionLabels = {
   approved: "承認",
@@ -19,6 +19,7 @@ const actionLabels = {
 
 export function RequestStatusActions({ requestId }: RequestStatusActionsProps) {
   const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
   const [loadingStatus, setLoadingStatus] = useState<string | null>(null);
 
   async function updateStatus(status: "approved" | "returned" | "rejected") {

@@ -6,7 +6,7 @@ import { MessageSquarePlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/lib/supabase/client";
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 type RequestCommentFormProps = {
   requestId: string;
@@ -14,6 +14,7 @@ type RequestCommentFormProps = {
 
 export function RequestCommentForm({ requestId }: RequestCommentFormProps) {
   const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 

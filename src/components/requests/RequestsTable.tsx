@@ -270,93 +270,95 @@ export function RequestsTable({ requests }: RequestsTableProps) {
             </div>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border bg-background">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="px-4 py-3 text-left font-medium">ID</th>
-                <th className="px-4 py-3 text-left font-medium">タイトル</th>
-                <th className="px-4 py-3 text-left font-medium">種別</th>
-                <th className="px-4 py-3 text-left font-medium">申請者</th>
-                <th className="px-4 py-3 text-left font-medium">申請者部署</th>
-                <th className="px-4 py-3 text-left font-medium">承認者</th>
-                <th className="px-4 py-3 text-left font-medium">承認者部署</th>
-                <th className="px-4 py-3 text-right font-medium">金額</th>
-                <th className="px-4 py-3 text-left font-medium">
-                  ステータス
-                </th>
-                <th className="px-4 py-3 text-left font-medium">申請日</th>
-                <th className="px-4 py-3 text-left font-medium">期限</th>
-                <th className="px-4 py-3 text-left font-medium">操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRequests.map((request) => (
-                <tr key={request.id} className="border-t transition-colors hover:bg-muted/30">
-                  <td className="px-4 py-3">
-                    <span className="rounded-full bg-muted px-2.5 py-1 font-mono text-xs">
-                      {request.id.slice(0, 8)}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/requests/${request.id}`}
-                      className="font-medium text-foreground hover:underline"
-                    >
-                      {request.title}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3">
-                    {getRequestTypeLabel(request.request_type)}
-                  </td>
-                  <td className="px-4 py-3">
-                    {request.applicant?.name ?? "未設定"}
-                  </td>
-                  <td className="px-4 py-3">
-                    {request.applicant?.department ?? "未設定"}
-                  </td>
-                  <td className="px-4 py-3">
-                    {request.approver?.name ?? "未設定"}
-                  </td>
-                  <td className="px-4 py-3">
-                    {request.approver?.department ?? "未設定"}
-                  </td>
-                  <td className="px-4 py-3 text-right tabular-nums">
-                    {request.amount
-                      ? `${request.amount.toLocaleString()}円`
-                      : "-"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={getStatusVariant(request.status)}>
-                      {getStatusLabel(request.status)}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {formatDate(request.created_at)}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {request.due_date}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Button asChild size="sm" variant="outline">
-                      <Link href={`/requests/${request.id}`}>詳細</Link>
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-
-              {filteredRequests.length === 0 && (
+        <div className="overflow-x-auto">
+          <div className="overflow-hidden rounded-2xl border bg-background">
+            <table className="w-full min-w-[1200px] text-sm">
+              <thead className="bg-muted/50">
                 <tr>
-                  <td
-                    colSpan={12}
-                    className="px-4 py-10 text-center text-muted-foreground"
-                  >
-                    条件に一致する申請データがありません。
-                  </td>
+                  <th className="px-4 py-3 text-left font-medium">ID</th>
+                  <th className="px-4 py-3 text-left font-medium">タイトル</th>
+                  <th className="px-4 py-3 text-left font-medium">種別</th>
+                  <th className="px-4 py-3 text-left font-medium">申請者</th>
+                  <th className="px-4 py-3 text-left font-medium">申請者部署</th>
+                  <th className="px-4 py-3 text-left font-medium">承認者</th>
+                  <th className="px-4 py-3 text-left font-medium">承認者部署</th>
+                  <th className="px-4 py-3 text-right font-medium">金額</th>
+                  <th className="px-4 py-3 text-left font-medium">
+                    ステータス
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium">申請日</th>
+                  <th className="px-4 py-3 text-left font-medium">期限</th>
+                  <th className="px-4 py-3 text-left font-medium">操作</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredRequests.map((request) => (
+                  <tr key={request.id} className="border-t transition-colors hover:bg-muted/30">
+                    <td className="px-4 py-3">
+                      <span className="rounded-full bg-muted px-2.5 py-1 font-mono text-xs">
+                        {request.id.slice(0, 8)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/requests/${request.id}`}
+                        className="font-medium text-foreground hover:underline"
+                      >
+                        {request.title}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3">
+                      {getRequestTypeLabel(request.request_type)}
+                    </td>
+                    <td className="px-4 py-3">
+                      {request.applicant?.name ?? "未設定"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {request.applicant?.department ?? "未設定"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {request.approver?.name ?? "未設定"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {request.approver?.department ?? "未設定"}
+                    </td>
+                    <td className="px-4 py-3 text-right tabular-nums">
+                      {request.amount
+                        ? `${request.amount.toLocaleString()}円`
+                        : "-"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge variant={getStatusVariant(request.status)}>
+                        {getStatusLabel(request.status)}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {formatDate(request.created_at)}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {request.due_date}
+                    </td>
+                    <td className="px-4 py-3">
+                      <Button asChild size="sm" variant="outline">
+                        <Link href={`/requests/${request.id}`}>詳細</Link>
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+
+                {filteredRequests.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={12}
+                      className="px-4 py-10 text-center text-muted-foreground"
+                    >
+                      条件に一致する申請データがありません。
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </CardContent>
     </Card>

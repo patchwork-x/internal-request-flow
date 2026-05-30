@@ -109,6 +109,7 @@ export default function NewRequestPage() {
 
       const { error: logError } = await supabase.from("audit_logs").insert({
         request_id: createdRequest.id,
+        user_id: user.id,
         action: "申請作成",
         detail: "新規申請を作成しました",
       });
@@ -167,11 +168,11 @@ export default function NewRequestPage() {
               <CheckCircle2 className="mt-0.5 size-5 text-green-700" />
               <div>
                 <p className="font-medium text-green-900">
-                  申請フォームのバリデーションに成功しました
-                </p>
-                <p className="mt-1 text-sm text-green-800">
-                  現時点ではモック実装のためDB保存はしていません。次のステップでSupabaseに保存します。
-                </p>
+                申請を保存しました
+              </p>
+              <p className="mt-1 text-sm text-green-800">
+                入力内容をSupabaseに保存し、操作ログを記録しました。
+              </p>
               </div>
             </CardContent>
           </Card>
