@@ -8,6 +8,7 @@ import {
   Sparkles,
   UserPlus,
   Users,
+  UserRound,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +41,11 @@ const navItems = [
     href: "/admin/audit-logs",
     label: "操作ログ",
     icon: History,
+  },
+  {
+    href: "/account",
+    label: "マイページ",
+    icon: UserRound,
   },
 ];
 
