@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Users } from "lucide-react";
-
+import { isCurrentUserAdmin } from "@/lib/auth/admin";
 import { UserActions } from "@/components/admin/UserActions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -113,9 +113,9 @@ async function getUsers(): Promise<ProfileRow[]> {
 }
 
 export default async function AdminUsersPage() {
-  const currentUserRole = await getCurrentUserRole();
+  const isAdmin = await isCurrentUserAdmin();
 
-  if (currentUserRole !== "admin") {
+  if (!isAdmin) {
     return (
       <main className="min-h-screen px-6 py-8">
         <div className="mx-auto max-w-3xl">

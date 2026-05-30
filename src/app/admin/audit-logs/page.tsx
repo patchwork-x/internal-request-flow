@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, ClipboardList } from "lucide-react";
-
+import { isCurrentUserAdmin } from "@/lib/auth/admin";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,6 +43,30 @@ function getActionVariant(
 }
 
 export default async function AuditLogsPage() {
+  const isAdmin = await isCurrentUserAdmin();
+
+  if (!isAdmin) {
+    return (
+      <main className="min-h-screen px-6 py-8">
+        <div className="mx-auto max-w-3xl">
+          <Card className="rounded-3xl border bg-background/80 shadow-sm">
+            <CardHeader>
+              <CardTitle>管理者権限が必要です</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <p className="text-muted-foreground">
+                操作ログ一覧を表示するには、管理者権限でログインしてください。
+              </p>
+              <Button asChild className="w-fit">
+                <Link href="/login">ログイン画面へ</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    );
+  }
+  
   const { data: auditLogs, error } = await supabase
     .from("audit_logs")
     .select(
