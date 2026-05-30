@@ -262,14 +262,14 @@ export function RequestsTable({ requests }: RequestsTableProps) {
 
         <div className="overflow-hidden rounded-2xl border bg-background">
           <table className="w-full text-sm">
-            <thead className="bg-muted">
+            <thead className="bg-muted/50">
               <tr>
                 <th className="px-4 py-3 text-left font-medium">ID</th>
                 <th className="px-4 py-3 text-left font-medium">タイトル</th>
                 <th className="px-4 py-3 text-left font-medium">種別</th>
                 <th className="px-4 py-3 text-left font-medium">承認者</th>
                 <th className="px-4 py-3 text-left font-medium">所属部署</th>
-                <th className="px-4 py-3 text-left font-medium">金額</th>
+                <th className="px-4 py-3 text-right font-medium">金額</th>
                 <th className="px-4 py-3 text-left font-medium">
                   ステータス
                 </th>
@@ -280,11 +280,20 @@ export function RequestsTable({ requests }: RequestsTableProps) {
             </thead>
             <tbody>
               {filteredRequests.map((request) => (
-                <tr key={request.id} className="border-t">
-                  <td className="px-4 py-3 font-medium">
-                    {request.id.slice(0, 8)}
+                <tr key={request.id} className="border-t transition-colors hover:bg-muted/30">
+                  <td className="px-4 py-3">
+                    <span className="rounded-full bg-muted px-2.5 py-1 font-mono text-xs">
+                      {request.id.slice(0, 8)}
+                    </span>
                   </td>
-                  <td className="px-4 py-3">{request.title}</td>
+                  <td className="px-4 py-3">
+                    <Link
+                      href={`/requests/${request.id}`}
+                      className="font-medium text-foreground hover:underline"
+                    >
+                      {request.title}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3">
                     {getRequestTypeLabel(request.request_type)}
                   </td>
@@ -294,7 +303,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                   <td className="px-4 py-3">
                     {request.approver?.department ?? "未設定"}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-right tabular-nums">
                     {request.amount
                       ? `${request.amount.toLocaleString()}円`
                       : "-"}

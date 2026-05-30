@@ -117,7 +117,7 @@ export default async function RequestDetailPage({ params }: PageProps) {
 
   if (error || !request) {
     return (
-      <main className="min-h-screen bg-muted/30 p-6">
+      <main className="min-h-screen px-6 py-8">
         <div className="mx-auto max-w-3xl">
           <Button asChild variant="ghost" className="mb-4">
             <Link href="/requests">
@@ -126,7 +126,7 @@ export default async function RequestDetailPage({ params }: PageProps) {
             </Link>
           </Button>
 
-          <Card className="rounded-2xl">
+          <Card className="rounded-3xl border bg-background/80 shadow-sm">
             <CardHeader>
               <CardTitle>申請が見つかりません</CardTitle>
             </CardHeader>
@@ -186,8 +186,8 @@ const displayRequest = requestWithApprover;
     .order("created_at", { ascending: false });
 
   return (
-    <main className="min-h-screen bg-muted/30 p-6">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6">
+    <main className="min-h-screen px-6 py-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6">
         <div>
           <Button asChild variant="ghost" className="mb-4">
             <Link href="/requests">
@@ -196,29 +196,40 @@ const displayRequest = requestWithApprover;
             </Link>
           </Button>
 
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
-            <div>
-              <div className="mb-2 flex items-center gap-2">
-                <Badge variant="secondary">{request.id.slice(0, 8)}</Badge>
-                <Badge variant={getStatusVariant(request.status)}>
-                  {getStatusLabel(request.status)}
-                </Badge>
+          <section className="relative overflow-hidden rounded-3xl border bg-background/80 p-8 shadow-sm">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-sky-400 to-cyan-300" />
+
+            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-start">
+              <div>
+                <div className="mb-3 flex flex-wrap items-center gap-2">
+                  <Badge variant="secondary" className="rounded-full">
+                    {request.id.slice(0, 8)}
+                  </Badge>
+                  <Badge variant={getStatusVariant(request.status)} className="rounded-full">
+                    {getStatusLabel(request.status)}
+                  </Badge>
+                </div>
+
+                <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+                  {request.title}
+                </h1>
+
+                <p className="mt-3 max-w-3xl text-muted-foreground">
+                  申請内容、承認状況、コメント履歴、操作ログを確認できます。
+                </p>
               </div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                {request.title}
-              </h1>
-              <p className="mt-2 text-muted-foreground">
-                Supabaseから取得した申請内容、承認状況、コメント履歴、操作ログを確認できます。
-              </p>
+
+              <div className="rounded-2xl border bg-muted/20 p-3">
+                <RequestStatusActions requestId={request.id} />
+              </div>
             </div>
-            <RequestStatusActions requestId={request.id} />
-          </div>
+          </section>
         </div>
 
         <section className="grid gap-4 lg:grid-cols-[2fr_1fr]">
           <div className="flex flex-col gap-4">
-            <Card className="rounded-2xl">
-              <CardHeader>
+            <Card className="rounded-3xl border bg-background/80 shadow-sm">
+              <CardHeader className="border-b bg-muted/20">
                 <CardTitle>申請内容</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
@@ -265,8 +276,8 @@ const displayRequest = requestWithApprover;
               </CardContent>
             </Card>
 
-            <Card className="rounded-2xl">
-              <CardHeader>
+            <Card className="rounded-3xl border bg-background/80 shadow-sm">
+              <CardHeader className="border-b bg-muted/20">
                 <CardTitle className="flex items-center gap-2">
                   <MessageSquare className="size-5" />
                   コメント履歴
@@ -307,7 +318,7 @@ const displayRequest = requestWithApprover;
           </div>
 
           <div className="flex flex-col gap-4">
-            <Card className="rounded-2xl">
+            <Card className="rounded-3xl border bg-background/80 shadow-sm">
               <CardHeader>
                 <CardTitle>承認フロー</CardTitle>
               </CardHeader>
@@ -333,7 +344,7 @@ const displayRequest = requestWithApprover;
               </CardContent>
             </Card>
 
-            <Card className="rounded-2xl">
+            <Card className="rounded-3xl border bg-background/80 shadow-sm">
               <CardHeader>
                 <CardTitle>操作ログ</CardTitle>
               </CardHeader>
@@ -362,7 +373,7 @@ const displayRequest = requestWithApprover;
               </CardContent>
             </Card>
 
-            <Card className="rounded-2xl">
+            <Card className="rounded-3xl border bg-background/80 shadow-sm">
               <CardHeader>
                 <CardTitle>この画面で見せるスキル</CardTitle>
               </CardHeader>
@@ -385,9 +396,11 @@ const displayRequest = requestWithApprover;
 
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border bg-background p-4">
-      <div className="text-sm text-muted-foreground">{label}</div>
-      <div className="mt-1 font-medium">{value}</div>
+    <div className="rounded-2xl border bg-muted/20 p-4">
+      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </div>
+      <div className="mt-2 font-semibold">{value}</div>
     </div>
   );
 }
@@ -408,8 +421,8 @@ function FlowItem({
       <div
         className={
           active
-            ? "flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground"
-            : "flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground"
+            ? "flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm"
+            : "flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground"
         }
       >
         {icon}
