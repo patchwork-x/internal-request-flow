@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -133,7 +133,7 @@ export function UserActions({ user }: UserActionsProps) {
   }
 
   return (
-    <div className="grid gap-3 rounded-2xl border bg-muted/20 p-4">
+    <div className="grid gap-3 rounded-lg border bg-muted/20 p-4">
       <div className="grid gap-2">
         <Label>氏名</Label>
         <Input value={name} onChange={(event) => setName(event.target.value)} />

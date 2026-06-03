@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -156,14 +156,14 @@ export default function NewRequestPage() {
             </Link>
           </Button>
 
-          <h1 className="text-3xl font-bold tracking-tight">新規申請</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">新規申請</h1>
           <p className="mt-2 text-muted-foreground">
             備品購入、SaaSアカウント発行、権限付与、PC購入、経費申請などを登録できます。
           </p>
         </div>
 
         {submittedData && (
-          <Card className="rounded-2xl border-green-200 bg-green-50">
+          <Card className="rounded-lg border-green-200 bg-green-50">
             <CardContent className="flex items-start gap-3 p-4">
               <CheckCircle2 className="mt-0.5 size-5 text-green-700" />
               <div>
@@ -178,7 +178,7 @@ export default function NewRequestPage() {
           </Card>
         )}
 
-        <Card className="rounded-2xl">
+        <Card className="rounded-lg">
           <CardHeader>
             <CardTitle>申請内容</CardTitle>
             <CardDescription>

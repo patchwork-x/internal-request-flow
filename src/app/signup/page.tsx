@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -70,9 +70,9 @@ export default function SignupPage() {
 
   return (
     <main className="min-h-[calc(100vh-73px)] bg-background px-6 py-8">
-      <div className="mx-auto grid min-h-[calc(100vh-137px)] max-w-6xl overflow-hidden rounded-3xl border bg-background shadow-sm lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="mx-auto grid min-h-[calc(100vh-137px)] max-w-6xl overflow-hidden rounded-xl border bg-background shadow-sm lg:grid-cols-[0.9fr_1.1fr]">
         <section className="flex items-center justify-center px-6 py-12">
-          <Card className="w-full max-w-lg rounded-3xl border bg-background/90 shadow-sm">
+          <Card className="w-full max-w-lg rounded-xl border bg-background/90 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <UserPlus className="size-6" />
@@ -153,7 +153,7 @@ export default function SignupPage() {
 
         <section className="hidden border-l bg-muted/20 p-10 lg:flex lg:flex-col lg:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
+            <div className="flex size-11 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
               <UserPlus className="size-5" />
             </div>
             <div>
@@ -166,7 +166,7 @@ export default function SignupPage() {
 
           <div className="max-w-xl">
             <p className="text-sm font-medium text-primary">Auth Ready</p>
-            <h1 className="mt-4 text-4xl font-bold tracking-tight">
+            <h1 className="mt-4 text-2xl font-semibold tracking-tight">
               申請者・承認者・管理者を分けて管理。
             </h1>
             <p className="mt-4 text-muted-foreground">
@@ -175,10 +175,10 @@ export default function SignupPage() {
           </div>
 
           <div className="grid gap-3 text-sm text-muted-foreground">
-            <div className="rounded-2xl border bg-background/80 p-4 shadow-sm">
+            <div className="rounded-lg border bg-background/80 p-4 shadow-sm">
               新規登録時にprofilesへユーザー情報を作成
             </div>
-            <div className="rounded-2xl border bg-background/80 p-4 shadow-sm">
+            <div className="rounded-lg border bg-background/80 p-4 shadow-sm">
               applicant / approver / admin のロール設計
             </div>
           </div>

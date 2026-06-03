@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -126,7 +126,7 @@ export default async function RequestDetailPage({ params }: PageProps) {
             </Link>
           </Button>
 
-          <Card className="rounded-3xl border bg-background/80 shadow-sm">
+          <Card className="rounded-xl border bg-background/80 shadow-sm">
             <CardHeader>
               <CardTitle>申請が見つかりません</CardTitle>
             </CardHeader>
@@ -216,21 +216,21 @@ const displayRequest = requestWithApprover;
             </Link>
           </Button>
 
-          <section className="relative overflow-hidden rounded-3xl border bg-background/80 p-8 shadow-sm">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-sky-400 to-cyan-300" />
+          <section className="relative overflow-hidden rounded-xl border bg-background/80 p-8 shadow-sm">
+            
 
             <div className="flex flex-col justify-between gap-6 md:flex-row md:items-start">
               <div>
                 <div className="mb-3 flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary" className="rounded-full">
+                  <Badge variant="secondary" className="rounded-md">
                     {request.id.slice(0, 8)}
                   </Badge>
-                  <Badge variant={getStatusVariant(request.status)} className="rounded-full">
+                  <Badge variant={getStatusVariant(request.status)} className="rounded-md">
                     {getStatusLabel(request.status)}
                   </Badge>
                 </div>
 
-                <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+                <h1 className="text-2xl font-semibold tracking-tight">
                   {request.title}
                 </h1>
 
@@ -239,7 +239,7 @@ const displayRequest = requestWithApprover;
                 </p>
               </div>
 
-              <div className="rounded-2xl border bg-muted/20 p-3">
+              <div className="rounded-lg border bg-muted/20 p-3">
                 <RequestStatusActions requestId={request.id} />
               </div>
             </div>
@@ -248,7 +248,7 @@ const displayRequest = requestWithApprover;
 
         <section className="grid gap-4 lg:grid-cols-[2fr_1fr]">
           <div className="flex flex-col gap-4">
-            <Card className="rounded-3xl border bg-background/80 shadow-sm">
+            <Card className="rounded-xl border bg-background/80 shadow-sm">
               <CardHeader className="border-b bg-muted/20">
                 <CardTitle>申請内容</CardTitle>
               </CardHeader>
@@ -300,7 +300,7 @@ const displayRequest = requestWithApprover;
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border bg-background/80 shadow-sm">
+            <Card className="rounded-xl border bg-background/80 shadow-sm">
               <CardHeader className="border-b bg-muted/20">
                 <CardTitle className="flex items-center gap-2">
                   <MessageSquare className="size-5" />
@@ -342,7 +342,7 @@ const displayRequest = requestWithApprover;
           </div>
 
           <div className="flex flex-col gap-4">
-            <Card className="rounded-3xl border bg-background/80 shadow-sm">
+            <Card className="rounded-xl border bg-background/80 shadow-sm">
               <CardHeader>
                 <CardTitle>承認フロー</CardTitle>
               </CardHeader>
@@ -368,7 +368,7 @@ const displayRequest = requestWithApprover;
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border bg-background/80 shadow-sm">
+            <Card className="rounded-xl border bg-background/80 shadow-sm">
               <CardHeader>
                 <CardTitle>操作ログ</CardTitle>
               </CardHeader>
@@ -397,7 +397,7 @@ const displayRequest = requestWithApprover;
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border bg-background/80 shadow-sm">
+            <Card className="rounded-xl border bg-background/80 shadow-sm">
               <CardHeader>
                 <CardTitle>この画面で見せるスキル</CardTitle>
               </CardHeader>
@@ -420,7 +420,7 @@ const displayRequest = requestWithApprover;
 
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border bg-muted/20 p-4">
+    <div className="rounded-lg border bg-muted/20 p-4">
       <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </div>
@@ -445,8 +445,8 @@ function FlowItem({
       <div
         className={
           active
-            ? "flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm"
-            : "flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground"
+            ? "flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm"
+            : "flex size-9 items-center justify-center rounded-md bg-muted text-muted-foreground"
         }
       >
         {icon}

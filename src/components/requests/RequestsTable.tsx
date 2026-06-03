@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -186,7 +186,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
   }, [requests, keyword, statusFilter, typeFilter]);
 
   return (
-    <Card className="overflow-hidden rounded-3xl border bg-background/80 shadow-sm">
+    <Card className="overflow-hidden rounded-xl border bg-background/80 shadow-sm">
       <CardHeader className="border-b bg-muted/20">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
@@ -196,14 +196,14 @@ export function RequestsTable({ requests }: RequestsTableProps) {
             </p>
           </div>
         
-          <div className="rounded-full bg-background px-4 py-2 text-sm text-muted-foreground shadow-sm">
+          <div className="rounded-md bg-background px-4 py-2 text-sm text-muted-foreground shadow-sm">
             {filteredRequests.length}件 / 全{requests.length}件
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="grid gap-4">
-        <div className="grid gap-3 rounded-2xl border bg-muted/20 p-4 lg:grid-cols-[1fr_220px_220px_auto]">
+        <div className="grid gap-3 rounded-lg border bg-muted/20 p-4 lg:grid-cols-[1fr_220px_220px_auto]">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -271,7 +271,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
         </div>
 
         <div className="overflow-x-auto">
-          <div className="overflow-hidden rounded-2xl border bg-background">
+          <div className="overflow-hidden rounded-lg border bg-background">
             <table className="w-full min-w-[1200px] text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -295,7 +295,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                 {filteredRequests.map((request) => (
                   <tr key={request.id} className="border-t transition-colors hover:bg-muted/30">
                     <td className="px-4 py-3">
-                      <span className="rounded-full bg-muted px-2.5 py-1 font-mono text-xs">
+                      <span className="rounded-md bg-muted px-2.5 py-1 font-mono text-xs">
                         {request.id.slice(0, 8)}
                       </span>
                     </td>

@@ -1,4 +1,4 @@
-export function getStatusVariant(status: string) {
+﻿export function getStatusVariant(status: string) {
   switch (status) {
     case "承認済み":
       return "default";

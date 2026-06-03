@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ArrowLeft, ShieldCheck, UserRound } from "lucide-react";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -40,7 +40,7 @@ export default async function AccountPage() {
     return (
       <main className="min-h-screen px-6 py-8">
         <div className="mx-auto max-w-3xl">
-          <Card className="rounded-3xl border bg-background/80 shadow-sm">
+          <Card className="rounded-xl border bg-background/80 shadow-sm">
             <CardHeader>
               <CardTitle>ログインが必要です</CardTitle>
             </CardHeader>
@@ -75,15 +75,15 @@ export default async function AccountPage() {
             </Link>
           </Button>
 
-          <section className="relative overflow-hidden rounded-3xl border bg-background/80 p-8 shadow-sm">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-sky-400 to-cyan-300" />
+          <section className="relative overflow-hidden rounded-xl border bg-background/80 p-8 shadow-sm">
+            
 
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <Badge variant="secondary" className="rounded-full">
+                <Badge variant="secondary" className="rounded-md">
                   Account
                 </Badge>
-                <h1 className="mt-3 text-3xl font-bold tracking-tight">
+                <h1 className="mt-3 text-2xl font-semibold tracking-tight">
                   マイページ
                 </h1>
                 <p className="mt-2 text-muted-foreground">
@@ -91,7 +91,7 @@ export default async function AccountPage() {
                 </p>
               </div>
 
-              <div className="flex size-16 items-center justify-center rounded-3xl bg-primary text-primary-foreground shadow-sm">
+              <div className="flex size-16 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
                 <UserRound className="size-8" />
               </div>
             </div>
@@ -99,7 +99,7 @@ export default async function AccountPage() {
         </div>
 
         <section className="grid gap-4 md:grid-cols-2">
-          <Card className="rounded-3xl border bg-background/80 shadow-sm">
+          <Card className="rounded-xl border bg-background/80 shadow-sm">
             <CardHeader className="border-b bg-muted/20">
               <CardTitle className="flex items-center gap-2">
                 <UserRound className="size-5" />
@@ -120,7 +120,7 @@ export default async function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-3xl border bg-background/80 shadow-sm">
+          <Card className="rounded-xl border bg-background/80 shadow-sm">
             <CardHeader className="border-b bg-muted/20">
               <CardTitle className="flex items-center gap-2">
                 <ShieldCheck className="size-5" />
@@ -128,12 +128,12 @@ export default async function AccountPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 p-6">
-              <div className="rounded-2xl border bg-muted/20 p-4">
+              <div className="rounded-lg border bg-muted/20 p-4">
                 <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   Role
                 </div>
                 <div className="mt-2 flex items-center gap-2">
-                  <Badge className="rounded-full">
+                  <Badge className="rounded-md">
                     {getRoleLabel(profile?.role)}
                   </Badge>
                   <span className="text-sm text-muted-foreground">
@@ -142,7 +142,7 @@ export default async function AccountPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border bg-muted/20 p-4 text-sm text-muted-foreground">
+              <div className="rounded-lg border bg-muted/20 p-4 text-sm text-muted-foreground">
                 現時点ではロール表示まで実装しています。今後、申請者・承認者・管理者ごとの画面表示や操作制御に拡張できます。
               </div>
             </CardContent>
@@ -155,7 +155,7 @@ export default async function AccountPage() {
 
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border bg-muted/20 p-4">
+    <div className="rounded-lg border bg-muted/20 p-4">
       <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </div>

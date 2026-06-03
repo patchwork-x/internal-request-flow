@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppNav } from "@/components/layout/AppNav";
@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Internal Request Flow",
-  description: "社内申請・承認ワークフロー管理アプリ",
+  title: "申請管理",
+  description: "申請管理ダッシュボード",
 };
 
 export default function RootLayout({

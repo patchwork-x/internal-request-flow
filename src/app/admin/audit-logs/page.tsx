@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ArrowLeft, ClipboardList } from "lucide-react";
 import { isCurrentUserAdmin } from "@/lib/auth/admin";
 import { Badge } from "@/components/ui/badge";
@@ -49,7 +49,7 @@ export default async function AuditLogsPage() {
     return (
       <main className="min-h-screen px-6 py-8">
         <div className="mx-auto max-w-3xl">
-          <Card className="rounded-3xl border bg-background/80 shadow-sm">
+          <Card className="rounded-xl border bg-background/80 shadow-sm">
             <CardHeader>
               <CardTitle>管理者権限が必要です</CardTitle>
             </CardHeader>
@@ -103,7 +103,7 @@ export default async function AuditLogsPage() {
             <Badge className="w-fit" variant="secondary">
               Admin
             </Badge>
-            <h1 className="text-3xl font-bold tracking-tight">操作ログ一覧</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">操作ログ一覧</h1>
             <p className="text-muted-foreground">
               申請作成、承認、差戻し、却下、コメント追加などの操作履歴を一覧で確認できます。
             </p>
@@ -116,7 +116,7 @@ export default async function AuditLogsPage() {
           </div>
         )}
 
-        <Card className="rounded-2xl">
+        <Card className="rounded-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ClipboardList className="size-5" />
@@ -185,7 +185,7 @@ export default async function AuditLogsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl">
+        <Card className="rounded-lg">
           <CardHeader>
             <CardTitle>この画面で見せるスキル</CardTitle>
           </CardHeader>

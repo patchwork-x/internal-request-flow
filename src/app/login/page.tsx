@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -53,23 +53,23 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-[calc(100vh-73px)] bg-background px-6 py-8">
-      <div className="mx-auto grid min-h-[calc(100vh-137px)] max-w-6xl overflow-hidden rounded-3xl border bg-background shadow-sm lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="mx-auto grid min-h-[calc(100vh-137px)] max-w-6xl overflow-hidden rounded-xl border bg-background shadow-sm lg:grid-cols-[1.1fr_0.9fr]">
         <section className="hidden bg-muted/20 p-10 lg:flex lg:flex-col lg:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
+            <div className="flex size-11 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
               <LogIn className="size-5" />
             </div>
             <div>
-              <div className="font-bold tracking-tight">Internal Request Flow</div>
+              <div className="font-bold tracking-tight">申請管理</div>
               <div className="text-sm text-muted-foreground">
-                Approval workflow dashboard
+                申請管理システム
               </div>
             </div>
           </div>
 
           <div className="max-w-xl">
-            <p className="text-sm font-medium text-primary">Portfolio App</p>
-            <h1 className="mt-4 text-4xl font-bold tracking-tight">
+            <p className="text-sm font-medium text-primary">管理画面</p>
+            <h1 className="mt-4 text-2xl font-semibold tracking-tight">
               社内申請・承認フローを、ひとつの管理画面で。
             </h1>
             <p className="mt-4 text-muted-foreground">
@@ -78,17 +78,17 @@ export default function LoginPage() {
           </div>
 
           <div className="grid gap-3 text-sm text-muted-foreground">
-            <div className="rounded-2xl border bg-background/80 p-4 shadow-sm">
+            <div className="rounded-lg border bg-background/80 p-4 shadow-sm">
               申請・承認・操作ログをSupabaseで管理
             </div>
-            <div className="rounded-2xl border bg-background/80 p-4 shadow-sm">
+            <div className="rounded-lg border bg-background/80 p-4 shadow-sm">
               React Hook Form + Zod による入力バリデーション
             </div>
           </div>
         </section>
 
         <section className="flex items-center justify-center px-6 py-12">
-          <Card className="w-full max-w-md rounded-3xl border bg-background/90 shadow-sm">
+          <Card className="w-full max-w-md rounded-xl border bg-background/90 shadow-sm">
             <CardHeader className="space-y-3">
               <div>
                 <CardTitle className="flex items-center gap-2 text-2xl">

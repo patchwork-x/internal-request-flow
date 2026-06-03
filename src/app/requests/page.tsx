@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -47,10 +47,10 @@ export default async function RequestsPage() {
   return (
     <main className="min-h-screen bg-muted/30 p-6">
       <div className="mx-auto flex max-w-7xl flex-col gap-6">
-        <section className="flex flex-col gap-4 rounded-2xl bg-background p-6 shadow-sm">
+        <section className="flex flex-col gap-4 rounded-lg bg-background p-6 shadow-sm">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">申請一覧</h1>
+              <h1 className="text-2xl font-semibold tracking-tight">申請一覧</h1>
               <p className="mt-2 text-muted-foreground">
                 Supabaseに保存された社内申請データを一覧で確認できます。
               </p>

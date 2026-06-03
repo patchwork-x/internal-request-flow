@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -84,7 +84,7 @@ export function CreateUserForm() {
   }
 
   return (
-    <div className="rounded-2xl border bg-muted/20">
+    <div className="rounded-lg border bg-muted/20">
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}

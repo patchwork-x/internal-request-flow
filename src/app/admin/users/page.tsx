@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ArrowLeft, Users } from "lucide-react";
 import { isCurrentUserAdmin } from "@/lib/auth/admin";
 import { UserActions } from "@/components/admin/UserActions";
@@ -120,7 +120,7 @@ export default async function AdminUsersPage() {
     return (
       <main className="min-h-screen px-6 py-8">
         <div className="mx-auto max-w-3xl">
-          <Card className="rounded-3xl border bg-background/80 shadow-sm">
+          <Card className="rounded-xl border bg-background/80 shadow-sm">
             <CardHeader>
               <CardTitle>管理者権限が必要です</CardTitle>
             </CardHeader>
@@ -151,14 +151,14 @@ export default async function AdminUsersPage() {
             </Link>
           </Button>
 
-          <section className="relative overflow-hidden rounded-3xl border bg-background/80 p-8 shadow-sm">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-sky-400 to-cyan-300" />
+          <section className="relative overflow-hidden rounded-xl border bg-background/80 p-8 shadow-sm">
+            
 
             <div className="flex flex-col gap-2">
-              <Badge className="w-fit rounded-full" variant="secondary">
+              <Badge className="w-fit rounded-md" variant="secondary">
                 Admin
               </Badge>
-              <h1 className="text-3xl font-bold tracking-tight">
+              <h1 className="text-2xl font-semibold tracking-tight">
                 ユーザー管理
               </h1>
               <p className="text-muted-foreground">
@@ -168,7 +168,7 @@ export default async function AdminUsersPage() {
           </section>
         </div>
 
-        <Card className="overflow-hidden rounded-3xl border bg-background/80 shadow-sm">
+        <Card className="overflow-hidden rounded-xl border bg-background/80 shadow-sm">
           <CardHeader className="border-b bg-muted/20">
             <CardTitle className="flex items-center gap-2 text-xl">
               <Users className="size-5" />
@@ -183,7 +183,7 @@ export default async function AdminUsersPage() {
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden rounded-3xl border bg-background/80 shadow-sm">
+        <Card className="overflow-hidden rounded-xl border bg-background/80 shadow-sm">
           <CardHeader className="border-b bg-muted/20">
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
               <div>
@@ -196,7 +196,7 @@ export default async function AdminUsersPage() {
                 </p>
               </div>
 
-              <div className="rounded-full bg-background px-4 py-2 text-sm text-muted-foreground shadow-sm">
+              <div className="rounded-md bg-background px-4 py-2 text-sm text-muted-foreground shadow-sm">
                 {users.length}件
               </div>
             </div>
@@ -204,7 +204,7 @@ export default async function AdminUsersPage() {
 
           <CardContent className="p-6">
             <div className="overflow-x-auto">
-              <div className="overflow-hidden rounded-2xl border bg-background">
+              <div className="overflow-hidden rounded-lg border bg-background">
                 <table className="w-full min-w-[1200px] text-sm">
                   <thead className="bg-muted/50">
                     <tr>
@@ -234,7 +234,7 @@ export default async function AdminUsersPage() {
                         className="border-t transition-colors hover:bg-muted/30"
                       >
                         <td className="px-4 py-3">
-                          <span className="rounded-full bg-muted px-2.5 py-1 font-mono text-xs">
+                          <span className="rounded-md bg-muted px-2.5 py-1 font-mono text-xs">
                             {user.id.slice(0, 8)}
                           </span>
                         </td>
@@ -245,7 +245,7 @@ export default async function AdminUsersPage() {
                         <td className="px-4 py-3">
                           <Badge
                             variant={getRoleVariant(user.role)}
-                            className="rounded-full"
+                            className="rounded-md"
                           >
                             {getRoleLabel(user.role)}
                           </Badge>
@@ -255,11 +255,11 @@ export default async function AdminUsersPage() {
                         </td>
                         <td className="px-4 py-3">
                           {user.email_confirmed_at ? (
-                            <Badge variant="secondary" className="rounded-full">
+                            <Badge variant="secondary" className="rounded-md">
                               確認済み
                             </Badge>
                           ) : (
-                            <Badge variant="outline" className="rounded-full">
+                            <Badge variant="outline" className="rounded-md">
                               未確認
                             </Badge>
                           )}

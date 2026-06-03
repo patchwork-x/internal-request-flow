@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   ClipboardList,
   FilePlus2,
@@ -94,16 +94,16 @@ export async function AppNav() {
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
         <Link href="/" className="group flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm transition group-hover:scale-105">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm transition group-hover:scale-105">
             <Sparkles className="size-5" />
           </div>
 
           <div className="leading-tight">
             <div className="font-bold tracking-tight">
-              Internal Request Flow
+              申請管理
             </div>
             <div className="text-xs text-muted-foreground">
-              Approval workflow dashboard
+              申請管理システム
             </div>
           </div>
         </Link>
@@ -111,9 +111,9 @@ export async function AppNav() {
         <div className="flex flex-wrap items-center gap-2">
           <Badge
             variant="secondary"
-            className="hidden rounded-full px-3 py-1 lg:inline-flex"
+            className="hidden rounded-md px-3 py-1 lg:inline-flex"
           >
-            Portfolio App
+            管理画面
           </Badge>
 
           {navItems.map((item) => {
@@ -125,7 +125,7 @@ export async function AppNav() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="rounded-full text-muted-foreground hover:text-foreground"
+                className="rounded-md text-muted-foreground hover:text-foreground"
               >
                 <Link href={item.href}>
                   <Icon className="size-4" />
@@ -145,7 +145,7 @@ export async function AppNav() {
                   asChild
                   variant="ghost"
                   size="sm"
-                  className="rounded-full text-muted-foreground hover:text-foreground"
+                  className="rounded-md text-muted-foreground hover:text-foreground"
                 >
                   <Link href={item.href}>
                     <Icon className="size-4" />
@@ -156,7 +156,7 @@ export async function AppNav() {
             })}
 
           {user ? (
-            <div className="flex flex-wrap items-center gap-2 rounded-full border bg-background px-3 py-1.5 shadow-sm">
+            <div className="flex flex-wrap items-center gap-2 rounded-md border bg-background px-3 py-1.5 shadow-sm">
               <div className="text-sm">
                 <span className="font-medium">
                   {profile?.name ?? user.email}
@@ -173,7 +173,7 @@ export async function AppNav() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="rounded-full text-muted-foreground hover:text-foreground"
+                className="rounded-md text-muted-foreground hover:text-foreground"
               >
                 <Link href="/login">
                   <LogIn className="size-4" />
@@ -185,7 +185,7 @@ export async function AppNav() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="rounded-full text-muted-foreground hover:text-foreground"
+                className="rounded-md text-muted-foreground hover:text-foreground"
               >
                 <Link href="/signup">
                   <UserPlus className="size-4" />

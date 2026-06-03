@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   ArrowRight,
   CheckCircle2,
@@ -167,15 +167,15 @@ export default async function Home() {
   return (
     <main className="min-h-screen px-6 py-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-6">
-        <section className="relative overflow-hidden rounded-3xl border bg-background/80 p-8 shadow-sm">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-sky-400 to-cyan-300" />
+        <section className="relative overflow-hidden rounded-xl border bg-background/80 p-8 shadow-sm">
+        
           <Badge className="w-fit" variant="secondary">
-            Internal Request Flow
+            申請管理
           </Badge>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight">
-              社内申請・承認ワークフロー管理アプリ
+            <h1 className="text-2xl font-semibold tracking-tight">
+              申請管理ダッシュボード
             </h1>
             <p className="max-w-3xl text-muted-foreground">
               備品購入、SaaSアカウント発行、権限付与、経費申請などの社内申請を一元管理する業務アプリです。
@@ -216,7 +216,7 @@ export default async function Home() {
             const Icon = item.icon;
 
             return (
-              <Card key={item.label} className="rounded-2xl">
+              <Card key={item.label} className="rounded-lg">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
                     {item.label}
@@ -232,7 +232,7 @@ export default async function Home() {
         </section>
 
         <section className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-          <Card className="rounded-3xl border bg-background/80 shadow-sm">
+          <Card className="rounded-xl border bg-background/80 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="size-5" />
@@ -301,23 +301,23 @@ export default async function Home() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-3xl border bg-background/80 shadow-sm">
+          <Card className="rounded-xl border bg-background/80 shadow-sm">
             <CardHeader>
-              <CardTitle>このアプリで見せるスキル</CardTitle>
+              <CardTitle>運用メモ</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3 text-sm text-muted-foreground">
-                <li>・Next.js / TypeScript による画面実装</li>
-                <li>・Supabase によるDB保存・取得</li>
-                <li>・申請、承認、差戻しの業務フロー理解</li>
-                <li>・コメント履歴、操作ログによる監査性の表現</li>
-                <li>・検索・絞り込みを備えた管理画面UI</li>
+                <li>・申請状況の一覧表示</li>
+                <li>・申請データの保存・参照</li>
+                <li>・承認状況の確認</li>
+                <li>・コメント履歴・操作ログの確認</li>
+                <li>・検索・絞り込み条件の管理</li>
               </ul>
             </CardContent>
           </Card>
         </section>
         <section className="grid gap-4">
-          <Card className="rounded-3xl border bg-background/80 shadow-sm">
+          <Card className="rounded-xl border bg-background/80 shadow-sm">
             <CardHeader>
               <CardTitle>申請種別ごとの件数</CardTitle>
             </CardHeader>
