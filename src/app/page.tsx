@@ -177,9 +177,9 @@ export default async function Home() {
             <h1 className="text-2xl font-semibold tracking-tight">
               申請管理ダッシュボード
             </h1>
-            <p className="max-w-3xl text-muted-foreground">
-              備品購入、SaaSアカウント発行、権限付与、経費申請などの社内申請を一元管理する業務アプリです。
-              申請状況、承認履歴、コメント履歴、操作ログを可視化し、社内業務の属人化を防ぐことを目的としています。
+            <p className="mt-3 max-w-3xl text-slate-600">
+              社内で発生する各種申請を一元管理し、承認状況や対応履歴を確認できる業務管理画面です。
+              申請作成、承認・差戻し、コメント履歴、操作ログを通じて、申請業務の進捗と対応状況を把握できます。
             </p>
           </div>
 
@@ -303,15 +303,17 @@ export default async function Home() {
 
           <Card className="rounded-xl border bg-background/80 shadow-sm">
             <CardHeader>
-              <CardTitle>運用メモ</CardTitle>
+              <CardTitle className="text-lg">
+                管理対象
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-3 text-sm text-muted-foreground">
-                <li>・申請状況の一覧表示</li>
-                <li>・申請データの保存・参照</li>
-                <li>・承認状況の確認</li>
-                <li>・コメント履歴・操作ログの確認</li>
-                <li>・検索・絞り込み条件の管理</li>
+              <ul className="grid gap-3 text-sm text-slate-600">
+                <li>・申請状況、期限、承認者の確認</li>
+                <li>・申請内容、理由、金額の管理</li>
+                <li>・承認、差戻し、却下の対応履歴</li>
+                <li>・コメント履歴、操作ログの確認</li>
+                <li>・条件検索、ステータス別の絞り込み</li>
               </ul>
             </CardContent>
           </Card>
