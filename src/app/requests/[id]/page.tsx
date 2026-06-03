@@ -119,7 +119,7 @@ export default async function RequestDetailPage({ params }: PageProps) {
     return (
       <main className="min-h-screen px-6 py-8">
         <div className="mx-auto max-w-3xl">
-          <Button asChild variant="ghost" className="mb-4">
+          <Button asChild variant="ghost" className="mb-mb-4 text-blue-100 hover:bg-white/10 hover:text-white">
             <Link href="/requests">
               <ArrowLeft className="size-4" />
               申請一覧へ戻る
@@ -209,7 +209,7 @@ const displayRequest = requestWithApprover;
     <main className="min-h-screen px-6 py-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-6">
         <div>
-          <Button asChild variant="ghost" className="mb-4">
+          <Button asChild variant="ghost" className="mb-4 text-blue-100 hover:bg-white/10 hover:text-white">
             <Link href="/requests">
               <ArrowLeft className="size-4" />
               申請一覧へ戻る
@@ -234,8 +234,8 @@ const displayRequest = requestWithApprover;
                   {request.title}
                 </h1>
 
-                <p className="mt-3 max-w-3xl text-muted-foreground">
-                  申請内容、承認状況、コメント履歴、操作ログを確認できます。
+                <p className="mt-3 max-w-3xl text-slate-600">
+                  申請内容、承認状況、コメント、操作履歴を確認できます。
                 </p>
               </div>
 
@@ -316,8 +316,7 @@ const displayRequest = requestWithApprover;
                       >
                         <div className="mb-2 flex items-center justify-between gap-3">
                           <div className="flex items-center gap-2">
-                            <span className="font-medium">システムユーザー</span>
-                            <Badge variant="outline">コメント</Badge>
+                            <span className="font-medium">コメント</span>
                           </div>
                           <span className="text-xs text-muted-foreground">
                             {formatDateTime(comment.created_at)}
@@ -362,7 +361,7 @@ const displayRequest = requestWithApprover;
                 <FlowItem
                   icon={<CheckCircle2 className="size-4" />}
                   title="承認完了"
-                  description="承認または差戻しで完了"
+                  description="承認、差戻し、却下のいずれかで完了"
                   active={request.status !== "submitted"}
                 />
               </CardContent>
@@ -399,15 +398,15 @@ const displayRequest = requestWithApprover;
 
             <Card className="rounded-xl border bg-background/80 shadow-sm">
               <CardHeader>
-                <CardTitle>この画面で見せるスキル</CardTitle>
+                <CardTitle>確認項目</CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>・URLパラメータに応じた1件取得</li>
-                  <li>・Supabaseのselect / eq / singleによる取得</li>
-                  <li>・申請詳細の情報設計</li>
-                  <li>・承認、差戻し、却下の業務フロー設計</li>
-                  <li>・次ステップでステータス更新処理を実装予定</li>
+                <ul className="space-y-2 text-sm text-slate-600">
+                  <li>・申請内容、理由、金額の確認</li>
+                  <li>・申請者、承認者、所属部署の確認</li>
+                  <li>・承認、差戻し、却下の対応履歴</li>
+                  <li>・コメント履歴、操作ログの確認</li>
+                  <li>・申請ごとの進捗状況の確認</li>
                 </ul>
               </CardContent>
             </Card>

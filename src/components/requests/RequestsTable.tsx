@@ -191,8 +191,8 @@ export function RequestsTable({ requests }: RequestsTableProps) {
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
             <CardTitle className="text-xl">申請データ</CardTitle>
-            <p className="mt-1 text-sm text-muted-foreground">
-              社内申請のステータス、承認者、期限を一覧で確認できます。
+            <p className="mt-1 text-sm text-slate-600">
+              条件で絞り込みながら、申請内容と対応状況を確認できます。
             </p>
           </div>
         
@@ -202,15 +202,15 @@ export function RequestsTable({ requests }: RequestsTableProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="grid gap-4">
-        <div className="grid gap-3 rounded-lg border bg-muted/20 p-4 lg:grid-cols-[1fr_220px_220px_auto]">
+      <CardContent className="grid gap-4 p-4">
+        <div className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[1fr_220px_220px_auto_auto]">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={keyword}
               onChange={(event) => setKeyword(event.target.value)}
               className="pl-9"
-              placeholder="タイトル・理由で検索"
+              placeholder="タイトル、理由、申請者で検索"
             />
           </div>
 
@@ -275,31 +275,31 @@ export function RequestsTable({ requests }: RequestsTableProps) {
             <table className="w-full min-w-[1200px] text-sm">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="px-4 py-3 text-left font-medium">ID</th>
-                  <th className="px-4 py-3 text-left font-medium">タイトル</th>
-                  <th className="px-4 py-3 text-left font-medium">種別</th>
-                  <th className="px-4 py-3 text-left font-medium">申請者</th>
-                  <th className="px-4 py-3 text-left font-medium">申請者部署</th>
-                  <th className="px-4 py-3 text-left font-medium">承認者</th>
-                  <th className="px-4 py-3 text-left font-medium">承認者部署</th>
-                  <th className="px-4 py-3 text-right font-medium">金額</th>
-                  <th className="px-4 py-3 text-left font-medium">
+                  <th className="px-4 py-2.5 text-left font-medium">ID</th>
+                  <th className="px-4 py-2.5 text-left font-medium">タイトル</th>
+                  <th className="px-4 py-2.5 text-left font-medium">種別</th>
+                  <th className="px-4 py-2.5 text-left font-medium">申請者</th>
+                  <th className="px-4 py-2.5 text-left font-medium">申請者部署</th>
+                  <th className="px-4 py-2.5 text-left font-medium">承認者</th>
+                  <th className="px-4 py-2.5 text-left font-medium">承認者部署</th>
+                  <th className="px-4 py-2.5 text-right font-medium">金額</th>
+                  <th className="px-4 py-2.5 text-left font-medium">
                     ステータス
                   </th>
-                  <th className="px-4 py-3 text-left font-medium">申請日</th>
-                  <th className="px-4 py-3 text-left font-medium">期限</th>
-                  <th className="px-4 py-3 text-left font-medium">操作</th>
+                  <th className="px-4 py-2.5 text-left font-medium">申請日</th>
+                  <th className="px-4 py-2.5 text-left font-medium">期限</th>
+                  <th className="px-4 py-2.5 text-left font-medium">操作</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredRequests.map((request) => (
                   <tr key={request.id} className="border-t transition-colors hover:bg-muted/30">
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       <span className="rounded-md bg-muted px-2.5 py-1 font-mono text-xs">
                         {request.id.slice(0, 8)}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       <Link
                         href={`/requests/${request.id}`}
                         className="font-medium text-foreground hover:underline"
@@ -307,38 +307,38 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                         {request.title}
                       </Link>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       {getRequestTypeLabel(request.request_type)}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       {request.applicant?.name ?? "未設定"}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       {request.applicant?.department ?? "未設定"}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       {request.approver?.name ?? "未設定"}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       {request.approver?.department ?? "未設定"}
                     </td>
-                    <td className="px-4 py-3 text-right tabular-nums">
+                    <td className="px-4 py-2.5 text-right tabular-nums">
                       {request.amount
                         ? `${request.amount.toLocaleString()}円`
                         : "-"}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       <Badge variant={getStatusVariant(request.status)}>
                         {getStatusLabel(request.status)}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">
+                    <td className="px-4 py-2.5 text-muted-foreground">
                       {formatDate(request.created_at)}
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">
+                    <td className="px-4 py-2.5 text-muted-foreground">
                       {request.due_date}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       <Button asChild size="sm" variant="outline">
                         <Link href={`/requests/${request.id}`}>詳細</Link>
                       </Button>

@@ -51,8 +51,8 @@ export default async function RequestsPage() {
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight">申請一覧</h1>
-              <p className="mt-2 text-muted-foreground">
-                Supabaseに保存された社内申請データを一覧で確認できます。
+              <p className="mt-2 text-slate-600">
+                申請状況、承認者、期限、対応履歴を確認できます。
               </p>
             </div>
 
