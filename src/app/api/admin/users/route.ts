@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { createSupabase管理者Client } from "@/lib/supabase/admin";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type UserPayload = {
@@ -54,7 +54,7 @@ export async function GET() {
     return admin.response;
   }
 
-  const supabase管理者 = createSupabase管理者Client();
+  const supabase管理者 = createSupabaseAdminClient();
 
   const { data: profiles, error: profilesError } = await supabase管理者
     .from("profiles")
@@ -112,7 +112,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase管理者 = createSupabase管理者Client();
+  const supabase管理者 = createSupabaseAdminClient();
 
   const { data: createdUser, error: authError } =
     await supabase管理者.auth.admin.createUser({

@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { createSupabase管理者Client } from "@/lib/supabase/admin";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 type ProfileRow = {
   id: string;
@@ -59,7 +59,7 @@ function formatDate(value: string | null) {
 }
 
 async function getUsers(): Promise<UserRow[]> {
-  const supabase管理者 = createSupabase管理者Client();
+  const supabase管理者 = createSupabaseAdminClient();
 
   const { data: profiles, error: profilesError } = await supabase管理者
     .from("profiles")
