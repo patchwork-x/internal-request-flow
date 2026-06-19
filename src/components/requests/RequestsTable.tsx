@@ -19,6 +19,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  getRequestTypeLabel,
+  getStatusLabel,
+  getStatusVariant,
+  requestTypeOptions,
+  statusOptions,
+} from "@/lib/constants/request";
 
 export type RequestRow = {
   id: string;
@@ -47,73 +54,21 @@ type RequestsTableProps = {
   requests: RequestRow[];
 };
 
-function getStatusLabel(status: string) {
-  switch (status) {
-    case "submitted":
-      return "申請中";
-    case "approved":
-      return "承認済み";
-    case "returned":
-      return "差戻し";
-    case "rejected":
-      return "却下";
-    case "canceled":
-      return "取消";
-    default:
-      return status;
-  }
-}
-
-function getRequestTypeLabel(type: string) {
-  switch (type) {
-    case "equipment":
-      return "備品購入申請";
-    case "saas_account":
-      return "SaaSアカウント発行申請";
-    case "permission":
-      return "権限付与申請";
-    case "pc_purchase":
-      return "PC購入申請";
-    case "expense":
-      return "経費申請";
-    default:
-      return type;
-  }
-}
-
-function getStatusVariant(
-  status: string
-): "default" | "secondary" | "destructive" | "outline" {
-  switch (status) {
-    case "approved":
-      return "default";
-    case "returned":
-      return "secondary";
-    case "rejected":
-      return "destructive";
-    default:
-      return "outline";
-  }
-}
-
 function formatDate(value: string) {
+  if (!value) return "-";
   return new Date(value).toLocaleDateString("ja-JP");
 }
 
-function escapeCsvValue(value: string | number | null) {
-  if (value === null) return "";
+function csvValue(value: string | number | null | undefined) {
+  if (value === null || value === undefined) return "";
 
-  const stringValue = String(value);
+  const text = String(value);
 
-  if (
-    stringValue.includes(",") ||
-    stringValue.includes('"') ||
-    stringValue.includes("\n")
-  ) {
-    return `"${stringValue.replaceAll('"', '""')}"`;
+  if (text.includes(",") || text.includes('"') || text.includes("\n")) {
+    return `"${text.replaceAll('"', '""')}"`;
   }
 
-  return stringValue;
+  return text;
 }
 
 function downloadCsv(requests: RequestRow[]) {
@@ -142,15 +97,14 @@ function downloadCsv(requests: RequestRow[]) {
     request.amount,
     getStatusLabel(request.status),
     formatDate(request.created_at),
-    request.due_date,
+    formatDate(request.due_date),
   ]);
 
-  const csvContent = [headers, ...rows]
-    .map((row) => row.map(escapeCsvValue).join(","))
+  const csv = [headers, ...rows]
+    .map((row) => row.map(csvValue).join(","))
     .join("\n");
 
-  const bom = "\uFEFF";
-  const blob = new Blob([bom + csvContent], {
+  const blob = new Blob(["\uFEFF" + csv], {
     type: "text/csv;charset=utf-8;",
   });
 
@@ -170,14 +124,24 @@ export function RequestsTable({ requests }: RequestsTableProps) {
   const [typeFilter, setTypeFilter] = useState("all");
 
   const filteredRequests = useMemo(() => {
-    return requests.filter((request) => {
-      const matchesKeyword =
-        request.title.toLowerCase().includes(keyword.toLowerCase()) ||
-        request.reason.toLowerCase().includes(keyword.toLowerCase());
+    const word = keyword.trim().toLowerCase();
 
+    return requests.filter((request) => {
+      const text = [
+        request.title,
+        request.reason,
+        request.applicant?.name,
+        request.applicant?.department,
+        request.approver?.name,
+        request.approver?.department,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      const matchesKeyword = word === "" || text.includes(word);
       const matchesStatus =
         statusFilter === "all" || request.status === statusFilter;
-
       const matchesType =
         typeFilter === "all" || request.request_type === typeFilter;
 
@@ -195,7 +159,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
               条件で絞り込みながら、申請内容と対応状況を確認できます。
             </p>
           </div>
-        
+
           <div className="rounded-md bg-background px-4 py-2 text-sm text-muted-foreground shadow-sm">
             {filteredRequests.length}件 / 全{requests.length}件
           </div>
@@ -203,7 +167,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
       </CardHeader>
 
       <CardContent className="grid gap-4 p-4">
-        <div className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[1fr_220px_220px_auto_auto]">
+        <div className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[1fr_220px_220px_auto]">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -220,11 +184,11 @@ export function RequestsTable({ requests }: RequestsTableProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">すべてのステータス</SelectItem>
-              <SelectItem value="submitted">申請中</SelectItem>
-              <SelectItem value="approved">承認済み</SelectItem>
-              <SelectItem value="returned">差戻し</SelectItem>
-              <SelectItem value="rejected">却下</SelectItem>
-              <SelectItem value="canceled">取消</SelectItem>
+              {statusOptions.map((status) => (
+                <SelectItem key={status.value} value={status.value}>
+                  {status.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -234,40 +198,38 @@ export function RequestsTable({ requests }: RequestsTableProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">すべての申請種別</SelectItem>
-              <SelectItem value="equipment">備品購入申請</SelectItem>
-              <SelectItem value="saas_account">
-                SaaSアカウント発行申請
-              </SelectItem>
-              <SelectItem value="permission">権限付与申請</SelectItem>
-              <SelectItem value="pc_purchase">PC購入申請</SelectItem>
-              <SelectItem value="expense">経費申請</SelectItem>
+              {requestTypeOptions.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
           <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setKeyword("");
-                  setStatusFilter("all");
-                  setTypeFilter("all");
-                }}
-              >
-                <Filter className="size-4" />
-                条件クリア
-              </Button>
-            
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => downloadCsv(filteredRequests)}
-                disabled={filteredRequests.length === 0}
-              >
-                <Download className="size-4" />
-                CSV出力
-              </Button>
-            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setKeyword("");
+                setStatusFilter("all");
+                setTypeFilter("all");
+              }}
+            >
+              <Filter className="size-4" />
+              条件クリア
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => downloadCsv(filteredRequests)}
+              disabled={filteredRequests.length === 0}
+            >
+              <Download className="size-4" />
+              CSV出力
+            </Button>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -276,12 +238,22 @@ export function RequestsTable({ requests }: RequestsTableProps) {
               <thead className="bg-muted/50">
                 <tr>
                   <th className="px-4 py-2.5 text-left font-medium">ID</th>
-                  <th className="px-4 py-2.5 text-left font-medium">タイトル</th>
+                  <th className="px-4 py-2.5 text-left font-medium">
+                    タイトル
+                  </th>
                   <th className="px-4 py-2.5 text-left font-medium">種別</th>
-                  <th className="px-4 py-2.5 text-left font-medium">申請者</th>
-                  <th className="px-4 py-2.5 text-left font-medium">申請者部署</th>
-                  <th className="px-4 py-2.5 text-left font-medium">承認者</th>
-                  <th className="px-4 py-2.5 text-left font-medium">承認者部署</th>
+                  <th className="px-4 py-2.5 text-left font-medium">
+                    申請者
+                  </th>
+                  <th className="px-4 py-2.5 text-left font-medium">
+                    申請者部署
+                  </th>
+                  <th className="px-4 py-2.5 text-left font-medium">
+                    承認者
+                  </th>
+                  <th className="px-4 py-2.5 text-left font-medium">
+                    承認者部署
+                  </th>
                   <th className="px-4 py-2.5 text-right font-medium">金額</th>
                   <th className="px-4 py-2.5 text-left font-medium">
                     ステータス
@@ -291,9 +263,13 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                   <th className="px-4 py-2.5 text-left font-medium">操作</th>
                 </tr>
               </thead>
+
               <tbody>
                 {filteredRequests.map((request) => (
-                  <tr key={request.id} className="border-t transition-colors hover:bg-muted/30">
+                  <tr
+                    key={request.id}
+                    className="border-t transition-colors hover:bg-muted/30"
+                  >
                     <td className="px-4 py-2.5">
                       <span className="rounded-md bg-muted px-2.5 py-1 font-mono text-xs">
                         {request.id.slice(0, 8)}
@@ -336,7 +312,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                       {formatDate(request.created_at)}
                     </td>
                     <td className="px-4 py-2.5 text-muted-foreground">
-                      {request.due_date}
+                      {formatDate(request.due_date)}
                     </td>
                     <td className="px-4 py-2.5">
                       <Button asChild size="sm" variant="outline">

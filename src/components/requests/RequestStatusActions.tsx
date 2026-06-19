@@ -3,61 +3,60 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CheckCircle2, RotateCcw, XCircle } from "lucide-react";
-import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { Button } from "@/components/ui/button";
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 type RequestStatusActionsProps = {
   requestId: string;
 };
 
+type NextStatus = "approved" | "returned" | "rejected";
 
-const actionLabels = {
+const statusText: Record<NextStatus, string> = {
   approved: "承認",
   returned: "差戻し",
   rejected: "却下",
-} as const;
+};
 
 export function RequestStatusActions({ requestId }: RequestStatusActionsProps) {
   const router = useRouter();
-  const supabase = createSupabaseBrowserClient();
-  const [loadingStatus, setLoadingStatus] = useState<string | null>(null);
+  const [loadingStatus, setLoadingStatus] = useState<NextStatus | null>(null);
 
-  async function updateStatus(status: "approved" | "returned" | "rejected") {
-    setLoadingStatus(status);
+  async function updateStatus(nextStatus: NextStatus) {
+    const supabase = createSupabaseBrowserClient();
+
+    setLoadingStatus(nextStatus);
 
     const { error: updateError } = await supabase
       .from("requests")
       .update({
-        status,
+        status: nextStatus,
         updated_at: new Date().toISOString(),
       })
       .eq("id", requestId);
 
     if (updateError) {
-      setLoadingStatus(null);
       console.error(updateError);
-      alert(`ステータス更新に失敗しました: ${updateError.message}`);
+      alert("ステータスを更新できませんでした。");
+      setLoadingStatus(null);
       return;
     }
+
+    const label = statusText[nextStatus];
 
     const { error: logError } = await supabase.from("audit_logs").insert({
       request_id: requestId,
-      action: actionLabels[status],
-      detail: `ステータスを「${actionLabels[status]}」に変更しました`,
+      action: label,
+      detail: `申請を${label}しました`,
     });
 
     setLoadingStatus(null);
+    router.refresh();
 
     if (logError) {
       console.error(logError);
-      alert(
-        `ステータスは更新されましたが、操作ログの保存に失敗しました: ${logError.message}`
-      );
-      router.refresh();
-      return;
+      alert("ステータスは更新されましたが、操作ログを保存できませんでした。");
     }
-
-    router.refresh();
   }
 
   return (

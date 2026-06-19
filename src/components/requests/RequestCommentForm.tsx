@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MessageSquarePlus } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
@@ -14,17 +13,18 @@ type RequestCommentFormProps = {
 
 export function RequestCommentForm({ requestId }: RequestCommentFormProps) {
   const router = useRouter();
-  const supabase = createSupabaseBrowserClient();
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit() {
-    const trimmedComment = comment.trim();
+    const text = comment.trim();
 
-    if (!trimmedComment) {
-      alert("コメントを入力してください");
+    if (!text) {
+      alert("コメントを入力してください。");
       return;
     }
+
+    const supabase = createSupabaseBrowserClient();
 
     setIsSubmitting(true);
 
@@ -32,29 +32,27 @@ export function RequestCommentForm({ requestId }: RequestCommentFormProps) {
       .from("request_comments")
       .insert({
         request_id: requestId,
-        comment: trimmedComment,
+        comment: text,
       });
 
     if (commentError) {
-      setIsSubmitting(false);
       console.error(commentError);
-      alert(`コメントの保存に失敗しました: ${commentError.message}`);
+      alert("コメントを保存できませんでした。");
+      setIsSubmitting(false);
       return;
     }
 
     const { error: logError } = await supabase.from("audit_logs").insert({
       request_id: requestId,
       action: "コメント追加",
-      detail: "コメントを追加しました",
+      detail: "申請にコメントを追加しました",
     });
 
     setIsSubmitting(false);
 
     if (logError) {
       console.error(logError);
-      alert(
-        `コメントは保存されましたが、操作ログの保存に失敗しました: ${logError.message}`
-      );
+      alert("コメントは保存されましたが、操作ログを保存できませんでした。");
       router.refresh();
       return;
     }
@@ -71,6 +69,7 @@ export function RequestCommentForm({ requestId }: RequestCommentFormProps) {
         placeholder="コメントを入力してください"
         className="min-h-28"
       />
+
       <div className="flex justify-end">
         <Button type="button" onClick={handleSubmit} disabled={isSubmitting}>
           <MessageSquarePlus className="size-4" />

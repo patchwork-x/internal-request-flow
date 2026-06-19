@@ -16,52 +16,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { supabase } from "@/lib/supabase/client";
+import {
+  getRequestTypeLabel,
+  getStatusLabel,
+} from "@/lib/constants/request";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type RequestRow = {
   id: string;
   title: string;
   request_type: string;
-  amount: number | null;
-  reason: string;
   status: string;
-  due_date: string;
   created_at: string;
 };
-
-function getStatusLabel(status: string) {
-  switch (status) {
-    case "submitted":
-      return "申請中";
-    case "approved":
-      return "承認済み";
-    case "returned":
-      return "差戻し";
-    case "rejected":
-      return "却下";
-    case "canceled":
-      return "取消";
-    default:
-      return status;
-  }
-}
-
-function getRequestTypeLabel(type: string) {
-  switch (type) {
-    case "equipment":
-      return "備品購入申請";
-    case "saas_account":
-      return "SaaSアカウント発行申請";
-    case "permission":
-      return "権限付与申請";
-    case "pc_purchase":
-      return "PC購入申請";
-    case "expense":
-      return "経費申請";
-    default:
-      return type;
-  }
-}
 
 function getStatusVariant(
   status: string
@@ -83,59 +50,61 @@ function formatDate(value: string) {
 }
 
 export default async function Home() {
-  const { data: requests, error } = await supabase
+  const supabase = await createSupabaseServerClient();
+
+  const { data, error } = await supabase
     .from("requests")
-    .select("id, title, request_type, amount, reason, status, due_date, created_at")
+    .select("id, title, request_type, status, created_at")
     .order("created_at", { ascending: false });
 
-  const requestRows = (requests ?? []) as RequestRow[];
+  const requests = (data ?? []) as RequestRow[];
 
-  const submittedCount = requestRows.filter(
+  const submittedCount = requests.filter(
     (request) => request.status === "submitted"
   ).length;
 
-  const approvedCount = requestRows.filter(
+  const approvedCount = requests.filter(
     (request) => request.status === "approved"
   ).length;
 
-  const returnedCount = requestRows.filter(
+  const returnedCount = requests.filter(
     (request) => request.status === "returned"
   ).length;
 
-  const rejectedCount = requestRows.filter(
+  const rejectedCount = requests.filter(
     (request) => request.status === "rejected"
   ).length;
 
-  const latestRequests = requestRows.slice(0, 5);
+  const latestRequests = requests.slice(0, 5);
 
   const requestTypeChartData = [
     {
       name: "備品購入",
-      count: requestRows.filter(
+      count: requests.filter(
         (request) => request.request_type === "equipment"
       ).length,
     },
     {
       name: "SaaS",
-      count: requestRows.filter(
+      count: requests.filter(
         (request) => request.request_type === "saas_account"
       ).length,
     },
     {
       name: "権限付与",
-      count: requestRows.filter(
+      count: requests.filter(
         (request) => request.request_type === "permission"
       ).length,
     },
     {
       name: "PC購入",
-      count: requestRows.filter(
+      count: requests.filter(
         (request) => request.request_type === "pc_purchase"
       ).length,
     },
     {
       name: "経費",
-      count: requestRows.filter(
+      count: requests.filter(
         (request) => request.request_type === "expense"
       ).length,
     },
@@ -167,23 +136,22 @@ export default async function Home() {
   return (
     <main className="min-h-screen px-6 py-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-6">
-        <section className="relative overflow-hidden rounded-xl border bg-background/80 p-8 shadow-sm">
-        
+        <section className="rounded-xl border bg-background/80 p-8 shadow-sm">
           <Badge className="w-fit" variant="secondary">
             申請管理
           </Badge>
 
-          <div className="flex flex-col gap-2">
+          <div className="mt-4 flex flex-col gap-2">
             <h1 className="text-2xl font-semibold tracking-tight">
               申請管理ダッシュボード
             </h1>
             <p className="mt-3 max-w-3xl text-slate-600">
-              社内で発生する各種申請を一元管理し、承認状況や対応履歴を確認できる業務管理画面です。
-              申請作成、承認・差戻し、コメント履歴、操作ログを通じて、申請業務の進捗と対応状況を把握できます。
+              社内で発生する申請をまとめて管理し、承認状況や対応履歴を確認できる画面です。
+              申請作成、承認・差戻し、コメント、操作ログを通じて、対応状況を追えるようにしています。
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap gap-3">
             <Button asChild>
               <Link href="/requests/new">
                 申請を作成
@@ -207,7 +175,7 @@ export default async function Home() {
 
         {error && (
           <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
-            データの取得に失敗しました: {error.message}
+            申請データを取得できませんでした。
           </div>
         )}
 
@@ -303,9 +271,7 @@ export default async function Home() {
 
           <Card className="rounded-xl border bg-background/80 shadow-sm">
             <CardHeader>
-              <CardTitle className="text-lg">
-                管理対象
-              </CardTitle>
+              <CardTitle className="text-lg">管理対象</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="grid gap-3 text-sm text-slate-600">
@@ -318,6 +284,7 @@ export default async function Home() {
             </CardContent>
           </Card>
         </section>
+
         <section className="grid gap-4">
           <Card className="rounded-xl border bg-background/80 shadow-sm">
             <CardHeader>
