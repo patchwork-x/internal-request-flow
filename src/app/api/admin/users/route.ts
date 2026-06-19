@@ -3,7 +3,7 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-type CreateUserPayload = {
+type UserPayload = {
   name: string;
   email: string;
   password: string;
@@ -16,30 +16,29 @@ async function assertAdmin() {
 
   const {
     data: { user },
-    error: userError,
   } = await supabase.auth.getUser();
 
-  if (userError || !user) {
+  if (!user) {
     return {
       ok: false as const,
       response: NextResponse.json(
-        { message: "ログインが必要です" },
+        { message: "ログインしてください。" },
         { status: 401 }
       ),
     };
   }
 
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", user.id)
     .single();
 
-  if (profileError || profile?.role !== "admin") {
+  if (profile?.role !== "admin") {
     return {
       ok: false as const,
       response: NextResponse.json(
-        { message: "管理者権限が必要です" },
+        { message: "管理者のみ操作できます。" },
         { status: 403 }
       ),
     };
@@ -49,10 +48,10 @@ async function assertAdmin() {
 }
 
 export async function GET() {
-  const adminCheck = await assertAdmin();
+  const admin = await assertAdmin();
 
-  if (!adminCheck.ok) {
-    return adminCheck.response;
+  if (!admin.ok) {
+    return admin.response;
   }
 
   const supabaseAdmin = createSupabaseAdminClient();
@@ -64,23 +63,23 @@ export async function GET() {
 
   if (profilesError) {
     return NextResponse.json(
-      { message: profilesError.message },
+      { message: "ユーザー情報を取得できませんでした。" },
       { status: 400 }
     );
   }
 
-  const { data: usersData, error: usersError } =
+  const { data: authUsers, error: authUsersError } =
     await supabaseAdmin.auth.admin.listUsers();
 
-  if (usersError) {
+  if (authUsersError) {
     return NextResponse.json(
-      { message: usersError.message },
+      { message: "認証ユーザーを取得できませんでした。" },
       { status: 400 }
     );
   }
 
   const users = (profiles ?? []).map((profile) => {
-    const authUser = usersData.users.find((user) => user.id === profile.id);
+    const authUser = authUsers.users.find((user) => user.id === profile.id);
 
     return {
       id: profile.id,
@@ -98,17 +97,17 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const adminCheck = await assertAdmin();
+  const admin = await assertAdmin();
 
-  if (!adminCheck.ok) {
-    return adminCheck.response;
+  if (!admin.ok) {
+    return admin.response;
   }
 
-  const body = (await request.json()) as CreateUserPayload;
+  const body = (await request.json()) as UserPayload;
 
   if (!body.name || !body.email || !body.password || !body.role) {
     return NextResponse.json(
-      { message: "氏名、メールアドレス、パスワード、権限は必須です" },
+      { message: "氏名、メール、パスワード、権限を入力してください。" },
       { status: 400 }
     );
   }
@@ -127,17 +126,15 @@ export async function POST(request: Request) {
       },
     });
 
-  if (authError) {
+  if (authError || !createdUser.user) {
     return NextResponse.json(
-      { message: authError.message },
+      { message: "ユーザーを作成できませんでした。" },
       { status: 400 }
     );
   }
 
-  const userId = createdUser.user.id;
-
   const { error: profileError } = await supabaseAdmin.from("profiles").upsert({
-    id: userId,
+    id: createdUser.user.id,
     name: body.name,
     role: body.role,
     department: body.department ?? null,
@@ -146,13 +143,13 @@ export async function POST(request: Request) {
 
   if (profileError) {
     return NextResponse.json(
-      { message: profileError.message },
+      { message: "プロフィールを保存できませんでした。" },
       { status: 400 }
     );
   }
 
   return NextResponse.json({
-    message: "ユーザーを作成しました",
-    userId,
+    message: "ユーザーを作成しました。",
+    userId: createdUser.user.id,
   });
 }

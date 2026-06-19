@@ -136,8 +136,8 @@ export default async function Home() {
   return (
     <main className="min-h-screen px-6 py-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-6">
-        <section className="rounded-xl border bg-background/80 p-8 shadow-sm">
-          <Badge className="w-fit" variant="secondary">
+        <section className="rounded-lg border bg-white p-6 shadow-sm">
+          <Badge className="w-fit rounded-md" variant="secondary">
             申請管理
           </Badge>
 
@@ -174,7 +174,7 @@ export default async function Home() {
         </section>
 
         {error && (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+          <div className="rounded-lg border border-destructive/30 bg-white p-4 text-sm text-destructive shadow-sm">
             申請データを取得できませんでした。
           </div>
         )}
@@ -184,7 +184,7 @@ export default async function Home() {
             const Icon = item.icon;
 
             return (
-              <Card key={item.label} className="rounded-lg">
+              <Card key={item.label} className="rounded-lg border bg-white shadow-sm">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
                     {item.label}
@@ -200,17 +200,17 @@ export default async function Home() {
         </section>
 
         <section className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-          <Card className="rounded-xl border bg-background/80 shadow-sm">
-            <CardHeader>
+          <Card className="rounded-lg border bg-white shadow-sm">
+            <CardHeader className="border-b bg-muted/20">
               <CardTitle className="flex items-center gap-2">
                 <FileText className="size-5" />
                 最新の申請
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="overflow-hidden rounded-xl border">
+            <CardContent className="p-4">
+              <div className="overflow-hidden rounded-lg border bg-white">
                 <table className="w-full text-sm">
-                  <thead className="bg-muted">
+                  <thead className="bg-muted/40">
                     <tr>
                       <th className="px-4 py-3 text-left font-medium">ID</th>
                       <th className="px-4 py-3 text-left font-medium">
@@ -227,7 +227,7 @@ export default async function Home() {
                   </thead>
                   <tbody>
                     {latestRequests.map((request) => (
-                      <tr key={request.id} className="border-t">
+                      <tr key={request.id} className="border-t hover:bg-muted/20">
                         <td className="px-4 py-3 font-medium">
                           {request.id.slice(0, 8)}
                         </td>
@@ -269,11 +269,11 @@ export default async function Home() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border bg-background/80 shadow-sm">
-            <CardHeader>
+          <Card className="rounded-lg border bg-white shadow-sm">
+            <CardHeader className="border-b bg-muted/20">
               <CardTitle className="text-lg">管理対象</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4">
               <ul className="grid gap-3 text-sm text-slate-600">
                 <li>・申請状況、期限、承認者の確認</li>
                 <li>・申請内容、理由、金額の管理</li>
@@ -286,11 +286,11 @@ export default async function Home() {
         </section>
 
         <section className="grid gap-4">
-          <Card className="rounded-xl border bg-background/80 shadow-sm">
-            <CardHeader>
+          <Card className="rounded-lg border bg-white shadow-sm">
+            <CardHeader className="border-b bg-muted/20">
               <CardTitle>申請種別ごとの件数</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4">
               <RequestTypeChart data={requestTypeChartData} />
             </CardContent>
           </Card>

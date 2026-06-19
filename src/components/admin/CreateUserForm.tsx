@@ -15,33 +15,43 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+type UserRole = "applicant" | "approver" | "admin";
+
+const defaultPassword = "password123";
+
 export function CreateUserForm() {
   const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("password123");
+  const [password, setPassword] = useState(defaultPassword);
   const [department, setDepartment] = useState("");
-  const [role, setRole] = useState<"applicant" | "approver" | "admin">(
-    "applicant"
-  );
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [role, setRole] = useState<UserRole>("applicant");
+
+  function resetForm() {
+    setName("");
+    setEmail("");
+    setPassword(defaultPassword);
+    setDepartment("");
+    setRole("applicant");
+  }
 
   async function handleCreateUser() {
     if (!name.trim()) {
-      alert("氏名を入力してください");
+      alert("氏名を入力してください。");
       return;
     }
 
     if (!email.trim()) {
-      alert("メールアドレスを入力してください");
+      alert("メールアドレスを入力してください。");
       return;
     }
 
     if (!password.trim()) {
-      alert("パスワードを入力してください");
+      alert("パスワードを入力してください。");
       return;
     }
 
@@ -62,24 +72,19 @@ export function CreateUserForm() {
       }),
     });
 
-    const result = await response.json();
+    const body = await response.json();
 
     setIsSubmitting(false);
 
     if (!response.ok) {
-      alert(`ユーザー作成に失敗しました: ${result.message}`);
+      alert(body.message ?? "ユーザーを作成できませんでした。");
       return;
     }
 
-    alert("ユーザーを作成しました");
+    alert("ユーザーを作成しました。");
 
-    setName("");
-    setEmail("");
-    setPassword("password123");
-    setDepartment("");
-    setRole("applicant");
+    resetForm();
     setIsOpen(false);
-
     router.refresh();
   }
 
@@ -93,10 +98,10 @@ export function CreateUserForm() {
         <div>
           <div className="flex items-center gap-2 font-medium">
             <UserPlus className="size-4" />
-            新規ユーザー作成フォーム
+            新規ユーザー作成
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
-            申請者・承認者・管理者アカウントを追加できます。
+            申請者、承認者、管理者を追加します。
           </p>
         </div>
 
@@ -141,7 +146,7 @@ export function CreateUserForm() {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="create-department">所属部署</Label>
+            <Label htmlFor="create-department">部署</Label>
             <Input
               id="create-department"
               value={department}
@@ -154,9 +159,7 @@ export function CreateUserForm() {
             <Label>権限</Label>
             <Select
               value={role}
-              onValueChange={(value) =>
-                setRole(value as "applicant" | "approver" | "admin")
-              }
+              onValueChange={(value) => setRole(value as UserRole)}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -170,9 +173,13 @@ export function CreateUserForm() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button onClick={handleCreateUser} disabled={isSubmitting}>
+            <Button
+              type="button"
+              onClick={handleCreateUser}
+              disabled={isSubmitting}
+            >
               <UserPlus className="size-4" />
-              {isSubmitting ? "作成中..." : "ユーザーを作成"}
+              {isSubmitting ? "作成中..." : "作成"}
             </Button>
 
             <Button

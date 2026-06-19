@@ -40,7 +40,7 @@ export default async function AccountPage() {
     return (
       <main className="min-h-screen px-6 py-8">
         <div className="mx-auto max-w-3xl">
-          <Card className="rounded-xl border bg-background/80 shadow-sm">
+          <Card className="rounded-lg border bg-white shadow-sm">
             <CardHeader>
               <CardTitle>ログインが必要です</CardTitle>
             </CardHeader>
@@ -75,9 +75,7 @@ export default async function AccountPage() {
             </Link>
           </Button>
 
-          <section className="relative overflow-hidden rounded-xl border bg-background/80 p-8 shadow-sm">
-            
-
+          <section className="rounded-lg border bg-white p-6 shadow-sm">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <Badge variant="secondary" className="rounded-md">
@@ -91,16 +89,16 @@ export default async function AccountPage() {
                 </p>
               </div>
 
-              <div className="flex size-16 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-                <UserRound className="size-8" />
+              <div className="flex size-12 items-center justify-center rounded-md border bg-white text-muted-foreground">
+                <UserRound className="size-6" />
               </div>
             </div>
           </section>
         </div>
 
         <section className="grid gap-4 md:grid-cols-2">
-          <Card className="rounded-xl border bg-background/80 shadow-sm">
-            <CardHeader className="border-b bg-muted/20">
+          <Card className="rounded-lg border bg-white shadow-sm">
+            <CardHeader className="border-b bg-white">
               <CardTitle className="flex items-center gap-2">
                 <UserRound className="size-5" />
                 アカウント情報
@@ -120,17 +118,17 @@ export default async function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border bg-background/80 shadow-sm">
-            <CardHeader className="border-b bg-muted/20">
+          <Card className="rounded-lg border bg-white shadow-sm">
+            <CardHeader className="border-b bg-white">
               <CardTitle className="flex items-center gap-2">
                 <ShieldCheck className="size-5" />
                 権限情報
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 p-6">
-              <div className="rounded-lg border bg-muted/20 p-4">
-                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Role
+              <div className="rounded-lg border bg-white p-4">
+                <div className="text-xs font-medium text-muted-foreground">
+                  権限
                 </div>
                 <div className="mt-2 flex items-center gap-2">
                   <Badge className="rounded-md">
@@ -142,8 +140,13 @@ export default async function AccountPage() {
                 </div>
               </div>
 
-              <div className="rounded-lg border bg-muted/20 p-4 text-sm text-muted-foreground">
-                現時点ではロール表示まで実装しています。今後、申請者・承認者・管理者ごとの画面表示や操作制御に拡張できます。
+              <div className="rounded-lg border bg-white p-4">
+                <div className="text-xs font-medium text-muted-foreground">
+                  最終更新
+                </div>
+                <div className="mt-2 font-semibold">
+                  {formatDate(profile?.updated_at)}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -155,10 +158,8 @@ export default async function AccountPage() {
 
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border bg-muted/20 p-4">
-      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        {label}
-      </div>
+    <div className="rounded-lg border bg-white p-4">
+      <div className="text-xs font-medium text-muted-foreground">{label}</div>
       <div className="mt-2 font-semibold">{value}</div>
     </div>
   );

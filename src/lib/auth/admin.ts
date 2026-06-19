@@ -1,6 +1,6 @@
 ﻿import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export async function getCurrentUserProfile() {
+export async function getLoginUserProfile() {
   const supabase = await createSupabaseServerClient();
 
   const {
@@ -37,7 +37,7 @@ export async function getCurrentUserProfile() {
 }
 
 export async function isCurrentUserAdmin() {
-  const { profile } = await getCurrentUserProfile();
+  const { profile } = await getLoginUserProfile();
 
   return profile?.role === "admin";
 }

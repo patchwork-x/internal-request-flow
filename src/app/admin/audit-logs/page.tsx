@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { supabase } from "@/lib/supabase/client";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type AuditLogRow = {
   id: string;
@@ -49,13 +49,13 @@ export default async function AuditLogsPage() {
     return (
       <main className="min-h-screen px-6 py-8">
         <div className="mx-auto max-w-3xl">
-          <Card className="rounded-xl border bg-background/80 shadow-sm">
+          <Card className="rounded-lg border bg-background shadow-sm">
             <CardHeader>
               <CardTitle>管理者権限が必要です</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
               <p className="text-muted-foreground">
-                操作ログ一覧を表示するには、管理者権限でログインしてください。
+                操作ログを見るには、管理者権限でログインしてください。
               </p>
               <Button asChild className="w-fit">
                 <Link href="/login">ログイン画面へ</Link>
@@ -66,8 +66,10 @@ export default async function AuditLogsPage() {
       </main>
     );
   }
-  
-  const { data: auditLogs, error } = await supabase
+
+  const supabase = await createSupabaseServerClient();
+
+  const { data, error } = await supabase
     .from("audit_logs")
     .select(
       `
@@ -88,6 +90,8 @@ export default async function AuditLogsPage() {
     console.error(error);
   }
 
+const auditLogs = (data ?? []) as unknown as AuditLogRow[];
+
   return (
     <main className="min-h-screen bg-muted/30 p-6">
       <div className="mx-auto flex max-w-6xl flex-col gap-6">
@@ -103,16 +107,18 @@ export default async function AuditLogsPage() {
             <Badge className="w-fit" variant="secondary">
               Admin
             </Badge>
-            <h1 className="text-2xl font-semibold tracking-tight">操作ログ一覧</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              操作ログ一覧
+            </h1>
             <p className="text-muted-foreground">
-              申請作成、承認、差戻し、却下、コメント追加などの操作履歴を一覧で確認できます。
+              申請作成、承認、差戻し、却下、コメント追加などの履歴を確認できます。
             </p>
           </div>
         </div>
 
         {error && (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
-            操作ログの取得に失敗しました: {error.message}
+          <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+            操作ログを取得できませんでした。
           </div>
         )}
 
@@ -125,7 +131,7 @@ export default async function AuditLogsPage() {
           </CardHeader>
 
           <CardContent>
-            <div className="overflow-hidden rounded-xl border">
+            <div className="overflow-hidden rounded-lg border">
               <table className="w-full text-sm">
                 <thead className="bg-muted">
                   <tr>
@@ -135,11 +141,11 @@ export default async function AuditLogsPage() {
                     <th className="px-4 py-3 text-left font-medium">
                       対象申請
                     </th>
-                    <th className="px-4 py-3 text-left font-medium">操作</th>
+                    <th className="px-4 py-3 text-left font-medium">確認</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {(auditLogs as AuditLogRow[] | null)?.map((log) => (
+                  {auditLogs.map((log) => (
                     <tr key={log.id} className="border-t">
                       <td className="px-4 py-3 text-muted-foreground">
                         {formatDateTime(log.created_at)}
@@ -149,9 +155,7 @@ export default async function AuditLogsPage() {
                           {log.action}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3">
-                        {log.detail ?? "-"}
-                      </td>
+                      <td className="px-4 py-3">{log.detail ?? "-"}</td>
                       <td className="px-4 py-3">
                         {log.requests?.title ?? "対象申請なし"}
                       </td>
@@ -169,7 +173,7 @@ export default async function AuditLogsPage() {
                     </tr>
                   ))}
 
-                  {(!auditLogs || auditLogs.length === 0) && (
+                  {auditLogs.length === 0 && (
                     <tr>
                       <td
                         colSpan={5}
@@ -182,21 +186,6 @@ export default async function AuditLogsPage() {
                 </tbody>
               </table>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-lg">
-          <CardHeader>
-            <CardTitle>この画面で見せるスキル</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>・Supabaseのリレーション取得</li>
-              <li>・操作ログによる監査性の表現</li>
-              <li>・管理者向け一覧画面の設計</li>
-              <li>・対象申請への導線設計</li>
-              <li>・業務アプリに必要な履歴管理の実装</li>
-            </ul>
           </CardContent>
         </Card>
       </div>

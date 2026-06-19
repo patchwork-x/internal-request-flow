@@ -1,56 +1,57 @@
 ﻿import Link from "next/link";
 import { Plus } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
   RequestsTable,
   type RequestRow,
 } from "@/components/requests/RequestsTable";
-import { supabase } from "@/lib/supabase/client";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function RequestsPage() {
-  const { data: requests, error } = await supabase
+  const supabase = await createSupabaseServerClient();
+
+  const { data: requests, error: requestError } = await supabase
     .from("requests")
     .select(
       "id, title, request_type, amount, reason, status, due_date, created_at, applicant_id, approver_id"
     )
     .order("created_at", { ascending: false });
 
-  const { data: profiles, error: profilesError } = await supabase
+  const { data: profiles, error: profileError } = await supabase
     .from("profiles")
     .select("id, name, department");
 
-  if (error) {
-    console.error(error);
+  if (requestError) {
+    console.error(requestError);
   }
 
-  if (profilesError) {
-    console.error(profilesError);
+  if (profileError) {
+    console.error(profileError);
   }
 
   const requestRows = (requests ?? []).map((request) => {
-    const applicant = (profiles ?? []).find(
-      (profile) => profile.id === request.applicant_id
-    );
+    const applicant =
+      profiles?.find((profile) => profile.id === request.applicant_id) ?? null;
 
-    const approver = (profiles ?? []).find(
-      (profile) => profile.id === request.approver_id
-    );
+    const approver =
+      profiles?.find((profile) => profile.id === request.approver_id) ?? null;
 
     return {
       ...request,
-      applicant: applicant ?? null,
-      approver: approver ?? null,
+      applicant,
+      approver,
     };
-  });
+  }) as RequestRow[];
 
   return (
-    <main className="min-h-screen bg-muted/30 p-6">
+    <main className="min-h-screen p-6">
       <div className="mx-auto flex max-w-7xl flex-col gap-6">
-        <section className="flex flex-col gap-4 rounded-lg bg-background p-6 shadow-sm">
+        <section className="rounded-lg border bg-white p-6 shadow-sm">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight">申請一覧</h1>
+              <h1 className="text-2xl font-semibold tracking-tight">
+                申請一覧
+              </h1>
               <p className="mt-2 text-slate-600">
                 申請状況、承認者、期限、対応履歴を確認できます。
               </p>
@@ -65,19 +66,19 @@ export default async function RequestsPage() {
           </div>
         </section>
 
-        {error && (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
-            データの取得に失敗しました: {error.message}
+        {requestError && (
+          <div className="rounded-lg border border-destructive/30 bg-white p-4 text-sm text-destructive shadow-sm">
+            申請データを取得できませんでした。
           </div>
         )}
 
-        {profilesError && (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
-            承認者情報の取得に失敗しました: {profilesError.message}
+        {profileError && (
+          <div className="rounded-lg border border-destructive/30 bg-white p-4 text-sm text-destructive shadow-sm">
+            ユーザー情報を取得できませんでした。
           </div>
         )}
 
-        <RequestsTable requests={requestRows as RequestRow[]} />
+        <RequestsTable requests={requestRows} />
       </div>
     </main>
   );

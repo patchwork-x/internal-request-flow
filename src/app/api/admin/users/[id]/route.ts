@@ -3,7 +3,7 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-type UpdateUserPayload = {
+type UserPayload = {
   name?: string;
   department?: string;
   role?: "applicant" | "approver" | "admin";
@@ -16,30 +16,29 @@ async function assertAdmin() {
 
   const {
     data: { user },
-    error: userError,
   } = await supabase.auth.getUser();
 
-  if (userError || !user) {
+  if (!user) {
     return {
       ok: false as const,
       response: NextResponse.json(
-        { message: "ログインが必要です" },
+        { message: "ログインしてください。" },
         { status: 401 }
       ),
     };
   }
 
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", user.id)
     .single();
 
-  if (profileError || profile?.role !== "admin") {
+  if (profile?.role !== "admin") {
     return {
       ok: false as const,
       response: NextResponse.json(
-        { message: "管理者権限が必要です" },
+        { message: "管理者のみ操作できます。" },
         { status: 403 }
       ),
     };
@@ -52,46 +51,47 @@ export async function PATCH(
   request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  const adminCheck = await assertAdmin();
+  const admin = await assertAdmin();
 
-  if (!adminCheck.ok) {
-    return adminCheck.response;
+  if (!admin.ok) {
+    return admin.response;
   }
 
   const { id } = await context.params;
-  const body = (await request.json()) as UpdateUserPayload;
+  const body = (await request.json()) as UserPayload;
 
   const supabaseAdmin = createSupabaseAdminClient();
 
-  const authAttributes: {
+  const authUpdate: {
     email?: string;
     password?: string;
     user_metadata?: Record<string, string | undefined>;
   } = {};
 
   if (body.email) {
-    authAttributes.email = body.email;
+    authUpdate.email = body.email;
   }
 
   if (body.password) {
-    authAttributes.password = body.password;
+    authUpdate.password = body.password;
   }
 
   if (body.name || body.department || body.role) {
-    authAttributes.user_metadata = {
+    authUpdate.user_metadata = {
       name: body.name,
       department: body.department,
       role: body.role,
     };
   }
 
-  if (Object.keys(authAttributes).length > 0) {
+  if (Object.keys(authUpdate).length > 0) {
     const { error: authError } =
-      await supabaseAdmin.auth.admin.updateUserById(id, authAttributes);
+      await supabaseAdmin.auth.admin.updateUserById(id, authUpdate);
 
     if (authError) {
+      console.error(authError);
       return NextResponse.json(
-        { message: authError.message },
+        { message: "認証ユーザーを更新できませんでした。" },
         { status: 400 }
       );
     }
@@ -124,23 +124,24 @@ export async function PATCH(
     .eq("id", id);
 
   if (profileError) {
+    console.error(profileError);
     return NextResponse.json(
-      { message: profileError.message },
+      { message: "プロフィールを更新できませんでした。" },
       { status: 400 }
     );
   }
 
-  return NextResponse.json({ message: "ユーザー情報を更新しました" });
+  return NextResponse.json({ message: "ユーザー情報を更新しました。" });
 }
 
 export async function DELETE(
   request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  const adminCheck = await assertAdmin();
+  const admin = await assertAdmin();
 
-  if (!adminCheck.ok) {
-    return adminCheck.response;
+  if (!admin.ok) {
+    return admin.response;
   }
 
   const { id } = await context.params;
@@ -152,8 +153,9 @@ export async function DELETE(
     .eq("id", id);
 
   if (profileError) {
+    console.error(profileError);
     return NextResponse.json(
-      { message: profileError.message },
+      { message: "プロフィールを削除できませんでした。" },
       { status: 400 }
     );
   }
@@ -161,11 +163,12 @@ export async function DELETE(
   const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(id);
 
   if (authError) {
+    console.error(authError);
     return NextResponse.json(
-      { message: authError.message },
+      { message: "認証ユーザーを削除できませんでした。" },
       { status: 400 }
     );
   }
 
-  return NextResponse.json({ message: "ユーザーを削除しました" });
+  return NextResponse.json({ message: "ユーザーを削除しました。" });
 }

@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 import { ArrowLeft, Users } from "lucide-react";
 import { isCurrentUserAdmin } from "@/lib/auth/admin";
+import { CreateUserForm } from "@/components/admin/CreateUserForm";
 import { UserActions } from "@/components/admin/UserActions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,8 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { CreateUserForm } from "@/components/admin/CreateUserForm";
 
 type ProfileRow = {
   id: string;
@@ -20,6 +19,9 @@ type ProfileRow = {
   role: string;
   department: string | null;
   created_at: string;
+};
+
+type UserRow = ProfileRow & {
   email: string | null;
   last_sign_in_at: string | null;
   email_confirmed_at: string | null;
@@ -46,8 +48,6 @@ function getRoleVariant(
       return "default";
     case "approver":
       return "secondary";
-    case "applicant":
-      return "outline";
     default:
       return "outline";
   }
@@ -58,25 +58,7 @@ function formatDate(value: string | null) {
   return new Date(value).toLocaleString("ja-JP");
 }
 
-async function getCurrentUserRole() {
-  const supabase = await createSupabaseServerClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return null;
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  return profile?.role ?? null;
-}
-
-async function getUsers(): Promise<ProfileRow[]> {
+async function getUsers(): Promise<UserRow[]> {
   const supabaseAdmin = createSupabaseAdminClient();
 
   const { data: profiles, error: profilesError } = await supabaseAdmin
@@ -89,7 +71,7 @@ async function getUsers(): Promise<ProfileRow[]> {
     return [];
   }
 
-  const { data: usersData, error: usersError } =
+  const { data: authUsers, error: usersError } =
     await supabaseAdmin.auth.admin.listUsers();
 
   if (usersError) {
@@ -97,15 +79,11 @@ async function getUsers(): Promise<ProfileRow[]> {
     return [];
   }
 
-  return (profiles ?? []).map((profile) => {
-    const authUser = usersData.users.find((user) => user.id === profile.id);
+  return ((profiles ?? []) as ProfileRow[]).map((profile) => {
+    const authUser = authUsers.users.find((user) => user.id === profile.id);
 
     return {
-      id: profile.id,
-      name: profile.name,
-      role: profile.role,
-      department: profile.department,
-      created_at: profile.created_at,
+      ...profile,
       email: authUser?.email ?? null,
       last_sign_in_at: authUser?.last_sign_in_at ?? null,
       email_confirmed_at: authUser?.email_confirmed_at ?? null,
@@ -120,13 +98,13 @@ export default async function AdminUsersPage() {
     return (
       <main className="min-h-screen px-6 py-8">
         <div className="mx-auto max-w-3xl">
-          <Card className="rounded-xl border bg-background/80 shadow-sm">
+          <Card className="rounded-lg border bg-white shadow-sm">
             <CardHeader>
               <CardTitle>管理者権限が必要です</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
               <p className="text-muted-foreground">
-                ユーザー管理画面を表示するには、管理者権限でログインしてください。
+                ユーザー管理を見るには、管理者権限でログインしてください。
               </p>
               <Button asChild className="w-fit">
                 <Link href="/">ダッシュボードへ戻る</Link>
@@ -151,9 +129,7 @@ export default async function AdminUsersPage() {
             </Link>
           </Button>
 
-          <section className="relative overflow-hidden rounded-xl border bg-background/80 p-8 shadow-sm">
-            
-
+          <section className="rounded-lg border bg-white p-6 shadow-sm">
             <div className="flex flex-col gap-2">
               <Badge className="w-fit rounded-md" variant="secondary">
                 Admin
@@ -162,20 +138,20 @@ export default async function AdminUsersPage() {
                 ユーザー管理
               </h1>
               <p className="text-muted-foreground">
-                申請者・承認者・管理者のアカウント情報を管理できます。
+                ユーザーの権限、部署、ログイン状況を確認できます。
               </p>
             </div>
           </section>
         </div>
 
-        <Card className="overflow-hidden rounded-xl border bg-background/80 shadow-sm">
-          <CardHeader className="border-b bg-muted/20">
+        <Card className="overflow-hidden rounded-lg border bg-white shadow-sm">
+          <CardHeader className="border-b bg-white">
             <CardTitle className="flex items-center gap-2 text-xl">
               <Users className="size-5" />
               新規ユーザー作成
             </CardTitle>
             <p className="mt-1 text-sm text-muted-foreground">
-              管理者権限で、申請者・承認者・管理者アカウントを作成できます。
+              必要に応じて、申請者・承認者・管理者のアカウントを追加します。
             </p>
           </CardHeader>
           <CardContent className="p-6">
@@ -183,8 +159,8 @@ export default async function AdminUsersPage() {
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden rounded-xl border bg-background/80 shadow-sm">
-          <CardHeader className="border-b bg-muted/20">
+        <Card className="overflow-hidden rounded-lg border bg-white shadow-sm">
+          <CardHeader className="border-b bg-white">
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
               <div>
                 <CardTitle className="flex items-center gap-2 text-xl">
@@ -196,7 +172,7 @@ export default async function AdminUsersPage() {
                 </p>
               </div>
 
-              <div className="rounded-md bg-background px-4 py-2 text-sm text-muted-foreground shadow-sm">
+              <div className="rounded-md border bg-white px-4 py-2 text-sm text-muted-foreground shadow-sm">
                 {users.length}件
               </div>
             </div>
@@ -204,9 +180,9 @@ export default async function AdminUsersPage() {
 
           <CardContent className="p-6">
             <div className="overflow-x-auto">
-              <div className="overflow-hidden rounded-lg border bg-background">
+              <div className="overflow-hidden rounded-lg border bg-white">
                 <table className="w-full min-w-[1200px] text-sm">
-                  <thead className="bg-muted/50">
+                  <thead className="bg-muted/40">
                     <tr>
                       <th className="px-4 py-3 text-left font-medium">ID</th>
                       <th className="px-4 py-3 text-left font-medium">氏名</th>
@@ -221,9 +197,7 @@ export default async function AdminUsersPage() {
                       <th className="px-4 py-3 text-left font-medium">
                         最終ログイン
                       </th>
-                      <th className="px-4 py-3 text-left font-medium">
-                        操作
-                      </th>
+                      <th className="px-4 py-3 text-left font-medium">操作</th>
                     </tr>
                   </thead>
 
@@ -231,7 +205,7 @@ export default async function AdminUsersPage() {
                     {users.map((user) => (
                       <tr
                         key={user.id}
-                        className="border-t transition-colors hover:bg-muted/30"
+                        className="border-t transition-colors hover:bg-muted/20"
                       >
                         <td className="px-4 py-3">
                           <span className="rounded-md bg-muted px-2.5 py-1 font-mono text-xs">
@@ -268,15 +242,7 @@ export default async function AdminUsersPage() {
                           {formatDate(user.last_sign_in_at)}
                         </td>
                         <td className="px-4 py-3">
-                          <UserActions
-                            user={{
-                              id: user.id,
-                              email: user.email,
-                              name: user.name,
-                              role: user.role,
-                              department: user.department,
-                            }}
-                          />
+                          <UserActions user={user} />
                         </td>
                       </tr>
                     ))}
@@ -287,7 +253,7 @@ export default async function AdminUsersPage() {
                           colSpan={8}
                           className="px-4 py-10 text-center text-muted-foreground"
                         >
-                          ユーザー情報がありません。
+                          ユーザーがまだ登録されていません。
                         </td>
                       </tr>
                     )}

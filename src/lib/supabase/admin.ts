@@ -5,11 +5,11 @@ export function createSupabaseAdminClient() {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl) {
-    throw new Error("NEXT_PUBLIC_SUPABASE_URL is not set");
+    throw new Error("SupabaseのURLが設定されていません。");
   }
 
   if (!serviceRoleKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not set");
+    throw new Error("Supabaseのservice role keyが設定されていません。");
   }
 
   return createClient(supabaseUrl, serviceRoleKey, {

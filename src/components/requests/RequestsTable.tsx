@@ -150,8 +150,8 @@ export function RequestsTable({ requests }: RequestsTableProps) {
   }, [requests, keyword, statusFilter, typeFilter]);
 
   return (
-    <Card className="overflow-hidden rounded-xl border bg-background/80 shadow-sm">
-      <CardHeader className="border-b bg-muted/20">
+    <Card className="overflow-hidden rounded-lg border bg-white shadow-sm">
+      <CardHeader className="border-b bg-white">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
             <CardTitle className="text-xl">申請データ</CardTitle>
@@ -160,26 +160,26 @@ export function RequestsTable({ requests }: RequestsTableProps) {
             </p>
           </div>
 
-          <div className="rounded-md bg-background px-4 py-2 text-sm text-muted-foreground shadow-sm">
+          <div className="rounded-md border bg-white px-4 py-2 text-sm text-muted-foreground shadow-sm">
             {filteredRequests.length}件 / 全{requests.length}件
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="grid gap-4 p-4">
-        <div className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[1fr_220px_220px_auto]">
+        <div className="grid gap-3 rounded-lg border bg-white p-4 lg:grid-cols-[1fr_220px_220px_auto]">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={keyword}
               onChange={(event) => setKeyword(event.target.value)}
-              className="pl-9"
+              className="bg-white pl-9"
               placeholder="タイトル、理由、申請者で検索"
             />
           </div>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full bg-white">
               <SelectValue placeholder="ステータス" />
             </SelectTrigger>
             <SelectContent>
@@ -193,7 +193,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
           </Select>
 
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full bg-white">
               <SelectValue placeholder="申請種別" />
             </SelectTrigger>
             <SelectContent>
@@ -233,9 +233,9 @@ export function RequestsTable({ requests }: RequestsTableProps) {
         </div>
 
         <div className="overflow-x-auto">
-          <div className="overflow-hidden rounded-lg border bg-background">
+          <div className="overflow-hidden rounded-lg border bg-white">
             <table className="w-full min-w-[1200px] text-sm">
-              <thead className="bg-muted/50">
+              <thead className="bg-muted/40">
                 <tr>
                   <th className="px-4 py-2.5 text-left font-medium">ID</th>
                   <th className="px-4 py-2.5 text-left font-medium">
@@ -268,7 +268,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                 {filteredRequests.map((request) => (
                   <tr
                     key={request.id}
-                    className="border-t transition-colors hover:bg-muted/30"
+                    className="border-t transition-colors hover:bg-muted/20"
                   >
                     <td className="px-4 py-2.5">
                       <span className="rounded-md bg-muted px-2.5 py-1 font-mono text-xs">

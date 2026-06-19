@@ -1,10 +1,12 @@
 ﻿import Link from "next/link";
+import type { ReactNode } from "react";
 import {
   ArrowLeft,
   CheckCircle2,
   Clock3,
   MessageSquare,
 } from "lucide-react";
+import { RequestCommentForm } from "@/components/requests/RequestCommentForm";
 import { RequestStatusActions } from "@/components/requests/RequestStatusActions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,8 +17,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { RequestCommentForm } from "@/components/requests/RequestCommentForm";
-import { supabase } from "@/lib/supabase/client";
+import {
+  getRequestTypeLabel,
+  getStatusLabel,
+  getStatusVariant,
+} from "@/lib/constants/request";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type RequestRow = {
   id: string;
@@ -30,6 +36,12 @@ type RequestRow = {
   due_date: string;
   created_at: string;
   updated_at: string;
+};
+
+type ProfileRow = {
+  id: string;
+  name: string;
+  department: string | null;
 };
 
 type AuditLogRow = {
@@ -51,82 +63,39 @@ type PageProps = {
   }>;
 };
 
-function getStatusLabel(status: string) {
-  switch (status) {
-    case "submitted":
-      return "申請中";
-    case "approved":
-      return "承認済み";
-    case "returned":
-      return "差戻し";
-    case "rejected":
-      return "却下";
-    case "canceled":
-      return "取消";
-    default:
-      return status;
-  }
-}
-
-function getRequestTypeLabel(type: string) {
-  switch (type) {
-    case "equipment":
-      return "備品購入申請";
-    case "saas_account":
-      return "SaaSアカウント発行申請";
-    case "permission":
-      return "権限付与申請";
-    case "pc_purchase":
-      return "PC購入申請";
-    case "expense":
-      return "経費申請";
-    default:
-      return type;
-  }
-}
-
-function getStatusVariant(
-  status: string
-): "default" | "secondary" | "destructive" | "outline" {
-  switch (status) {
-    case "approved":
-      return "default";
-    case "returned":
-      return "secondary";
-    case "rejected":
-      return "destructive";
-    default:
-      return "outline";
-  }
-}
-
 function formatDateTime(value: string) {
   return new Date(value).toLocaleString("ja-JP");
 }
 
+function formatDate(value: string) {
+  if (!value) return "-";
+  return new Date(value).toLocaleDateString("ja-JP");
+}
+
 export default async function RequestDetailPage({ params }: PageProps) {
   const { id } = await params;
+  const supabase = await createSupabaseServerClient();
 
   const { data: request, error } = await supabase
-  .from("requests")
-  .select(
-    "id, title, request_type, amount, reason, status, applicant_id, approver_id, due_date, created_at, updated_at"
-  )
-  .eq("id", id)
-  .single<RequestRow>();
+    .from("requests")
+    .select(
+      "id, title, request_type, amount, reason, status, applicant_id, approver_id, due_date, created_at, updated_at"
+    )
+    .eq("id", id)
+    .single<RequestRow>();
 
   if (error || !request) {
     return (
       <main className="min-h-screen px-6 py-8">
         <div className="mx-auto max-w-3xl">
-          <Button asChild variant="ghost" className="mb-mb-4 text-blue-100 hover:bg-white/10 hover:text-white">
+          <Button asChild variant="ghost" className="mb-4">
             <Link href="/requests">
               <ArrowLeft className="size-4" />
               申請一覧へ戻る
             </Link>
           </Button>
 
-          <Card className="rounded-xl border bg-background/80 shadow-sm">
+          <Card className="rounded-lg border bg-white shadow-sm">
             <CardHeader>
               <CardTitle>申請が見つかりません</CardTitle>
             </CardHeader>
@@ -134,11 +103,6 @@ export default async function RequestDetailPage({ params }: PageProps) {
               <p className="text-muted-foreground">
                 指定された申請データを取得できませんでした。
               </p>
-              {error && (
-                <p className="mt-3 text-sm text-destructive">
-                  {error.message}
-                </p>
-              )}
             </CardContent>
           </Card>
         </div>
@@ -146,52 +110,24 @@ export default async function RequestDetailPage({ params }: PageProps) {
     );
   }
 
-let approver: {
-  id: string;
-  name: string;
-  department: string | null;
-} | null = null;
+  const profileIds = [request.applicant_id, request.approver_id].filter(
+    Boolean
+  ) as string[];
 
-let applicant: {
-  id: string;
-  name: string;
-  department: string | null;
-} | null = null;
-
-if (request.applicant_id) {
-  const { data: applicantProfile, error: applicantError } = await supabase
+  const { data: profiles } = await supabase
     .from("profiles")
     .select("id, name, department")
-    .eq("id", request.applicant_id)
-    .single();
+    .in("id", profileIds);
 
-  if (applicantError) {
-    console.error(applicantError);
-  }
+  const applicant =
+    (profiles as ProfileRow[] | null)?.find(
+      (profile) => profile.id === request.applicant_id
+    ) ?? null;
 
-  applicant = applicantProfile;
-}
-
-if (request.approver_id) {
-  const { data: approverProfile, error: approverError } = await supabase
-    .from("profiles")
-    .select("id, name, department")
-    .eq("id", request.approver_id)
-    .single();
-
-  if (approverError) {
-    console.error(approverError);
-  }
-
-  approver = approverProfile;
-}
-
-const requestWithApprover = {
-  ...request,
-  approver,
-};
-
-const displayRequest = requestWithApprover;
+  const approver =
+    (profiles as ProfileRow[] | null)?.find(
+      (profile) => profile.id === request.approver_id
+    ) ?? null;
 
   const { data: comments } = await supabase
     .from("request_comments")
@@ -205,27 +141,31 @@ const displayRequest = requestWithApprover;
     .eq("request_id", request.id)
     .order("created_at", { ascending: false });
 
+  const commentRows = (comments ?? []) as CommentRow[];
+  const logRows = (auditLogs ?? []) as AuditLogRow[];
+
   return (
     <main className="min-h-screen px-6 py-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-6">
         <div>
-          <Button asChild variant="ghost" className="mb-4 text-blue-100 hover:bg-white/10 hover:text-white">
+          <Button asChild variant="ghost" className="mb-4">
             <Link href="/requests">
               <ArrowLeft className="size-4" />
               申請一覧へ戻る
             </Link>
           </Button>
 
-          <section className="relative overflow-hidden rounded-xl border bg-background/80 p-8 shadow-sm">
-            
-
+          <section className="rounded-lg border bg-white p-6 shadow-sm">
             <div className="flex flex-col justify-between gap-6 md:flex-row md:items-start">
               <div>
                 <div className="mb-3 flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary" className="rounded-md">
+                  <Badge className="rounded-md" variant="secondary">
                     {request.id.slice(0, 8)}
                   </Badge>
-                  <Badge variant={getStatusVariant(request.status)} className="rounded-md">
+                  <Badge
+                    className="rounded-md"
+                    variant={getStatusVariant(request.status)}
+                  >
                     {getStatusLabel(request.status)}
                   </Badge>
                 </div>
@@ -239,7 +179,7 @@ const displayRequest = requestWithApprover;
                 </p>
               </div>
 
-              <div className="rounded-lg border bg-muted/20 p-3">
+              <div className="rounded-lg border bg-white p-3 shadow-sm">
                 <RequestStatusActions requestId={request.id} />
               </div>
             </div>
@@ -248,11 +188,11 @@ const displayRequest = requestWithApprover;
 
         <section className="grid gap-4 lg:grid-cols-[2fr_1fr]">
           <div className="flex flex-col gap-4">
-            <Card className="rounded-xl border bg-background/80 shadow-sm">
+            <Card className="rounded-lg border bg-white shadow-sm">
               <CardHeader className="border-b bg-muted/20">
                 <CardTitle>申請内容</CardTitle>
               </CardHeader>
-              <CardContent className="grid gap-4">
+              <CardContent className="grid gap-4 p-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <InfoItem
                     label="申請種別"
@@ -280,7 +220,10 @@ const displayRequest = requestWithApprover;
                         : "-"
                     }
                   />
-                  <InfoItem label="希望期限" value={request.due_date} />
+                  <InfoItem
+                    label="希望期限"
+                    value={formatDate(request.due_date)}
+                  />
                   <InfoItem
                     label="申請日時"
                     value={formatDateTime(request.created_at)}
@@ -293,46 +236,44 @@ const displayRequest = requestWithApprover;
                   <h2 className="mb-2 text-sm font-medium text-muted-foreground">
                     申請理由
                   </h2>
-                  <p className="rounded-xl bg-muted/50 p-4 text-sm leading-7">
+                  <p className="rounded-lg border bg-white p-4 text-sm leading-7">
                     {request.reason}
                   </p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="rounded-xl border bg-background/80 shadow-sm">
+            <Card className="rounded-lg border bg-white shadow-sm">
               <CardHeader className="border-b bg-muted/20">
                 <CardTitle className="flex items-center gap-2">
                   <MessageSquare className="size-5" />
                   コメント履歴
                 </CardTitle>
               </CardHeader>
-              <CardContent className="grid gap-4">
+              <CardContent className="grid gap-4 p-4">
                 <div className="grid gap-3">
-                  {(comments as CommentRow[] | null)?.map((comment) => (
-                      <div
-                        key={comment.id}
-                        className="rounded-xl border bg-background p-4"
-                      >
-                        <div className="mb-2 flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">コメント</span>
-                          </div>
-                          <span className="text-xs text-muted-foreground">
-                            {formatDateTime(comment.created_at)}
-                          </span>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {comment.comment}
-                        </p>
+                  {commentRows.map((comment) => (
+                    <div
+                      key={comment.id}
+                      className="rounded-lg border bg-white p-4"
+                    >
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <span className="font-medium">コメント</span>
+                        <span className="text-xs text-muted-foreground">
+                          {formatDateTime(comment.created_at)}
+                        </span>
                       </div>
-                    ))}
+                      <p className="text-sm text-muted-foreground">
+                        {comment.comment}
+                      </p>
+                    </div>
+                  ))}
 
-                    {(!comments || comments.length === 0) && (
-                      <div className="rounded-xl border bg-background p-4 text-sm text-muted-foreground">
-                        コメントはまだありません。
-                      </div>
-                    )}
+                  {commentRows.length === 0 && (
+                    <div className="rounded-lg border bg-white p-4 text-sm text-muted-foreground">
+                      コメントはまだありません。
+                    </div>
+                  )}
                 </div>
 
                 <RequestCommentForm requestId={request.id} />
@@ -341,11 +282,11 @@ const displayRequest = requestWithApprover;
           </div>
 
           <div className="flex flex-col gap-4">
-            <Card className="rounded-xl border bg-background/80 shadow-sm">
-              <CardHeader>
+            <Card className="rounded-lg border bg-white shadow-sm">
+              <CardHeader className="border-b bg-muted/20">
                 <CardTitle>承認フロー</CardTitle>
               </CardHeader>
-              <CardContent className="grid gap-4 text-sm">
+              <CardContent className="grid gap-4 p-4 text-sm">
                 <FlowItem
                   icon={<CheckCircle2 className="size-4" />}
                   title="申請作成"
@@ -360,54 +301,39 @@ const displayRequest = requestWithApprover;
                 />
                 <FlowItem
                   icon={<CheckCircle2 className="size-4" />}
-                  title="承認完了"
+                  title="対応完了"
                   description="承認、差戻し、却下のいずれかで完了"
                   active={request.status !== "submitted"}
                 />
               </CardContent>
             </Card>
 
-            <Card className="rounded-xl border bg-background/80 shadow-sm">
-              <CardHeader>
+            <Card className="rounded-lg border bg-white shadow-sm">
+              <CardHeader className="border-b bg-muted/20">
                 <CardTitle>操作ログ</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4">
                 <div className="grid gap-3">
-                    {(auditLogs as AuditLogRow[] | null)?.map((log) => (
-                      <div key={log.id} className="rounded-xl border p-3">
-                        <div className="font-medium">{log.action}</div>
-                        {log.detail && (
-                          <div className="mt-1 text-sm text-muted-foreground">
-                            {log.detail}
-                          </div>
-                        )}
-                        <div className="mt-1 text-xs text-muted-foreground">
-                          {formatDateTime(log.created_at)}
+                  {logRows.map((log) => (
+                    <div key={log.id} className="rounded-lg border bg-white p-3">
+                      <div className="font-medium">{log.action}</div>
+                      {log.detail && (
+                        <div className="mt-1 text-sm text-muted-foreground">
+                          {log.detail}
                         </div>
+                      )}
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        {formatDateTime(log.created_at)}
                       </div>
-                    ))}
+                    </div>
+                  ))}
 
-                    {(!auditLogs || auditLogs.length === 0) && (
-                      <div className="rounded-xl border p-3 text-sm text-muted-foreground">
-                        操作ログはまだありません。
-                      </div>
-                    )}
+                  {logRows.length === 0 && (
+                    <div className="rounded-lg border bg-white p-3 text-sm text-muted-foreground">
+                      操作ログはまだありません。
+                    </div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className="rounded-xl border bg-background/80 shadow-sm">
-              <CardHeader>
-                <CardTitle>確認項目</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-slate-600">
-                  <li>・申請内容、理由、金額の確認</li>
-                  <li>・申請者、承認者、所属部署の確認</li>
-                  <li>・承認、差戻し、却下の対応履歴</li>
-                  <li>・コメント履歴、操作ログの確認</li>
-                  <li>・申請ごとの進捗状況の確認</li>
-                </ul>
               </CardContent>
             </Card>
           </div>
@@ -419,10 +345,8 @@ const displayRequest = requestWithApprover;
 
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border bg-muted/20 p-4">
-      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        {label}
-      </div>
+    <div className="rounded-lg border bg-white p-4">
+      <div className="text-xs font-medium text-muted-foreground">{label}</div>
       <div className="mt-2 font-semibold">{value}</div>
     </div>
   );
@@ -434,7 +358,7 @@ function FlowItem({
   description,
   active = false,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   description: string;
   active?: boolean;
@@ -445,7 +369,7 @@ function FlowItem({
         className={
           active
             ? "flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm"
-            : "flex size-9 items-center justify-center rounded-md bg-muted text-muted-foreground"
+            : "flex size-9 items-center justify-center rounded-md border bg-white text-muted-foreground"
         }
       >
         {icon}

@@ -37,14 +37,22 @@ export function UserActions({ user }: UserActionsProps) {
   const [email, setEmail] = useState(user.email ?? "");
   const [password, setPassword] = useState("");
 
+  function resetForm() {
+    setName(user.name);
+    setDepartment(user.department ?? "");
+    setRole(user.role);
+    setEmail(user.email ?? "");
+    setPassword("");
+  }
+
   async function handleUpdate() {
     if (!name.trim()) {
-      alert("氏名を入力してください");
+      alert("氏名を入力してください。");
       return;
     }
 
     if (!email.trim()) {
-      alert("メールアドレスを入力してください");
+      alert("メールアドレスを入力してください。");
       return;
     }
 
@@ -64,25 +72,23 @@ export function UserActions({ user }: UserActionsProps) {
       }),
     });
 
-    const result = await response.json();
+    const body = await response.json();
 
     setIsSubmitting(false);
 
     if (!response.ok) {
-      alert(`更新に失敗しました: ${result.message}`);
+      alert(body.message ?? "更新できませんでした。");
       return;
     }
 
-    alert("ユーザー情報を更新しました");
+    alert("ユーザー情報を更新しました。");
     setIsEditing(false);
     setPassword("");
     router.refresh();
   }
 
   async function handleDelete() {
-    const confirmed = confirm(
-      `${user.name} を削除しますか？この操作は取り消せません。`
-    );
+    const confirmed = confirm(`${user.name} を削除しますか？`);
 
     if (!confirmed) return;
 
@@ -92,16 +98,16 @@ export function UserActions({ user }: UserActionsProps) {
       method: "DELETE",
     });
 
-    const result = await response.json();
+    const body = await response.json();
 
     setIsSubmitting(false);
 
     if (!response.ok) {
-      alert(`削除に失敗しました: ${result.message}`);
+      alert(body.message ?? "削除できませんでした。");
       return;
     }
 
-    alert("ユーザーを削除しました");
+    alert("ユーザーを削除しました。");
     router.refresh();
   }
 
@@ -189,12 +195,8 @@ export function UserActions({ user }: UserActionsProps) {
           type="button"
           variant="outline"
           onClick={() => {
+            resetForm();
             setIsEditing(false);
-            setName(user.name);
-            setDepartment(user.department ?? "");
-            setRole(user.role);
-            setEmail(user.email ?? "");
-            setPassword("");
           }}
           disabled={isSubmitting}
         >

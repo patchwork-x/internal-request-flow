@@ -2,10 +2,10 @@
 import {
   ClipboardList,
   FilePlus2,
+  FileText,
   Gauge,
   History,
   LogIn,
-  Sparkles,
   UserPlus,
   Users,
   UserRound,
@@ -13,8 +13,8 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/layout/LogoutButton";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const navItems = [
   {
@@ -91,17 +91,15 @@ export async function AppNav() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b bg-white">
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
-        <Link href="/" className="group flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm transition group-hover:scale-105">
-            <Sparkles className="size-5" />
+        <Link href="/" className="flex items-center gap-3">
+          <div className="flex size-9 items-center justify-center rounded-md border bg-white text-muted-foreground">
+            <FileText className="size-5" />
           </div>
 
           <div className="leading-tight">
-            <div className="font-bold tracking-tight">
-              申請管理
-            </div>
+            <div className="font-semibold tracking-tight">申請管理</div>
             <div className="text-xs text-muted-foreground">
               申請管理システム
             </div>
@@ -125,7 +123,7 @@ export async function AppNav() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="rounded-md text-muted-foreground hover:text-foreground"
+                className="rounded-md text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               >
                 <Link href={item.href}>
                   <Icon className="size-4" />
@@ -138,14 +136,14 @@ export async function AppNav() {
           {profile?.role === "admin" &&
             adminNavItems.map((item) => {
               const Icon = item.icon;
-            
+
               return (
                 <Button
                   key={item.href}
                   asChild
                   variant="ghost"
                   size="sm"
-                  className="rounded-md text-muted-foreground hover:text-foreground"
+                  className="rounded-md text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                 >
                   <Link href={item.href}>
                     <Icon className="size-4" />
@@ -156,7 +154,7 @@ export async function AppNav() {
             })}
 
           {user ? (
-            <div className="flex flex-wrap items-center gap-2 rounded-md border bg-background px-3 py-1.5 shadow-sm">
+            <div className="flex flex-wrap items-center gap-2 rounded-md border bg-white px-3 py-1.5 shadow-sm">
               <div className="text-sm">
                 <span className="font-medium">
                   {profile?.name ?? user.email}
@@ -173,7 +171,7 @@ export async function AppNav() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="rounded-md text-muted-foreground hover:text-foreground"
+                className="rounded-md text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               >
                 <Link href="/login">
                   <LogIn className="size-4" />
@@ -185,7 +183,7 @@ export async function AppNav() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="rounded-md text-muted-foreground hover:text-foreground"
+                className="rounded-md text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               >
                 <Link href="/signup">
                   <UserPlus className="size-4" />
