@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -157,7 +157,7 @@ export default function SignupPage() {
               <UserPlus className="size-5" />
             </div>
             <div>
-              <div className="font-bold tracking-tight">Account Setup</div>
+              <div className="font-bold tracking-tight">アカウント Setup</div>
               <div className="text-sm text-muted-foreground">
                 Role-based workflow app
               </div>

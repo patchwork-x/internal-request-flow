@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,7 +53,7 @@ export default async function RequestsPage() {
                 申請一覧
               </h1>
               <p className="mt-2 text-slate-600">
-                申請状況、承認者、期限、対応履歴を確認できます。
+                申請状況、承認者、期限を一覧で確認します。
               </p>
             </div>
 

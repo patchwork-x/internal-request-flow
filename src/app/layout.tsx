@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppNav } from "@/components/layout/AppNav";
@@ -35,3 +35,4 @@ export default function RootLayout({
     </html>
   );
 }
+

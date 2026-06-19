@@ -1,6 +1,6 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { ArrowLeft, Users } from "lucide-react";
-import { isCurrentUserAdmin } from "@/lib/auth/admin";
+import { isCurrentUser管理者 } from "@/lib/auth/admin";
 import { CreateUserForm } from "@/components/admin/CreateUserForm";
 import { UserActions } from "@/components/admin/UserActions";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabase管理者Client } from "@/lib/supabase/admin";
 
 type ProfileRow = {
   id: string;
@@ -59,9 +59,9 @@ function formatDate(value: string | null) {
 }
 
 async function getUsers(): Promise<UserRow[]> {
-  const supabaseAdmin = createSupabaseAdminClient();
+  const supabase管理者 = createSupabase管理者Client();
 
-  const { data: profiles, error: profilesError } = await supabaseAdmin
+  const { data: profiles, error: profilesError } = await supabase管理者
     .from("profiles")
     .select("id, name, role, department, created_at")
     .order("created_at", { ascending: false });
@@ -72,7 +72,7 @@ async function getUsers(): Promise<UserRow[]> {
   }
 
   const { data: authUsers, error: usersError } =
-    await supabaseAdmin.auth.admin.listUsers();
+    await supabase管理者.auth.admin.listUsers();
 
   if (usersError) {
     console.error(usersError);
@@ -91,10 +91,10 @@ async function getUsers(): Promise<UserRow[]> {
   });
 }
 
-export default async function AdminUsersPage() {
-  const isAdmin = await isCurrentUserAdmin();
+export default async function 管理者UsersPage() {
+  const is管理者 = await isCurrentUser管理者();
 
-  if (!isAdmin) {
+  if (!is管理者) {
     return (
       <main className="min-h-screen px-6 py-8">
         <div className="mx-auto max-w-3xl">
@@ -132,13 +132,13 @@ export default async function AdminUsersPage() {
           <section className="rounded-lg border bg-white p-6 shadow-sm">
             <div className="flex flex-col gap-2">
               <Badge className="w-fit rounded-md" variant="secondary">
-                Admin
+                管理者
               </Badge>
               <h1 className="text-2xl font-semibold tracking-tight">
                 ユーザー管理
               </h1>
               <p className="text-muted-foreground">
-                ユーザーの権限、部署、ログイン状況を確認できます。
+                ユーザーの権限、部署、ログイン状況を管理します。
               </p>
             </div>
           </section>
@@ -151,7 +151,7 @@ export default async function AdminUsersPage() {
               新規ユーザー作成
             </CardTitle>
             <p className="mt-1 text-sm text-muted-foreground">
-              必要に応じて、申請者・承認者・管理者のアカウントを追加します。
+              申請者、承認者、管理者を追加します。
             </p>
           </CardHeader>
           <CardContent className="p-6">
@@ -168,7 +168,7 @@ export default async function AdminUsersPage() {
                   ユーザー一覧
                 </CardTitle>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  メールアドレス、権限、部署、最終ログイン日時を確認できます。
+                  登録ユーザーの情報を一覧で確認します。
                 </p>
               </div>
 

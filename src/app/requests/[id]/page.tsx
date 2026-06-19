@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   ArrowLeft,
@@ -175,7 +175,7 @@ export default async function RequestDetailPage({ params }: PageProps) {
                 </h1>
 
                 <p className="mt-3 max-w-3xl text-slate-600">
-                  申請内容、承認状況、コメント、操作履歴を確認できます。
+                  申請内容、コメント、操作履歴を確認します。
                 </p>
               </div>
 

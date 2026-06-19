@@ -1,6 +1,6 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { ArrowLeft, ClipboardList } from "lucide-react";
-import { isCurrentUserAdmin } from "@/lib/auth/admin";
+import { isCurrentUser管理者 } from "@/lib/auth/admin";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,9 +43,9 @@ function getActionVariant(
 }
 
 export default async function AuditLogsPage() {
-  const isAdmin = await isCurrentUserAdmin();
+  const is管理者 = await isCurrentUser管理者();
 
-  if (!isAdmin) {
+  if (!is管理者) {
     return (
       <main className="min-h-screen px-6 py-8">
         <div className="mx-auto max-w-3xl">
@@ -105,7 +105,7 @@ const auditLogs = (data ?? []) as unknown as AuditLogRow[];
 
           <div className="flex flex-col gap-2">
             <Badge className="w-fit" variant="secondary">
-              Admin
+              管理者
             </Badge>
             <h1 className="text-2xl font-semibold tracking-tight">
               操作ログ一覧

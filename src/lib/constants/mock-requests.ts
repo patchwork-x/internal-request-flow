@@ -1,4 +1,4 @@
-﻿export type RequestStatus = "申請中" | "承認済み" | "差戻し" | "却下";
+export type RequestStatus = "申請中" | "承認済み" | "差戻し" | "却下";
 
 export type RequestItem = {
   id: string;

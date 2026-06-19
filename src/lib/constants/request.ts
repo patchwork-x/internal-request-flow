@@ -1,4 +1,4 @@
-﻿export const requestTypeOptions = [
+export const requestTypeOptions = [
   { value: "equipment", label: "備品購入申請" },
   { value: "saas_account", label: "SaaSアカウント発行申請" },
   { value: "permission", label: "権限付与申請" },

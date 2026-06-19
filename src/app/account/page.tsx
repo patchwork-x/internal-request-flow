@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { ArrowLeft, ShieldCheck, UserRound } from "lucide-react";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -29,7 +29,7 @@ function formatDate(value: string | null | undefined) {
   return new Date(value).toLocaleString("ja-JP");
 }
 
-export default async function AccountPage() {
+export default async function アカウントPage() {
   const supabase = await createSupabaseServerClient();
 
   const {
@@ -46,7 +46,7 @@ export default async function AccountPage() {
             </CardHeader>
             <CardContent className="grid gap-4">
               <p className="text-muted-foreground">
-                アカウント情報を確認するにはログインしてください。
+                ログインするとアカウント情報を確認できます。
               </p>
               <Button asChild className="w-fit">
                 <Link href="/login">ログイン画面へ</Link>
@@ -79,13 +79,13 @@ export default async function AccountPage() {
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <Badge variant="secondary" className="rounded-md">
-                  Account
+                  アカウント
                 </Badge>
                 <h1 className="mt-3 text-2xl font-semibold tracking-tight">
                   マイページ
                 </h1>
                 <p className="mt-2 text-muted-foreground">
-                  ログイン中ユーザーのプロフィール、権限、所属部署を確認できます。
+                  ログイン中のアカウント情報を確認します。
                 </p>
               </div>
 

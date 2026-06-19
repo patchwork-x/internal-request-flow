@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -169,9 +169,6 @@ export default function NewRequestPage() {
               <div>
                 <p className="font-medium text-green-900">
                 申請を保存しました
-              </p>
-              <p className="mt-1 text-sm text-green-800">
-                入力内容をSupabaseに保存し、操作ログを記録しました。
               </p>
               </div>
             </CardContent>

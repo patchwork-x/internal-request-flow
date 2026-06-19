@@ -1,6 +1,6 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabase管理者Client } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type UserPayload = {
@@ -11,7 +11,7 @@ type UserPayload = {
   role: "applicant" | "approver" | "admin";
 };
 
-async function assertAdmin() {
+async function assert管理者() {
   const supabase = await createSupabaseServerClient();
 
   const {
@@ -48,15 +48,15 @@ async function assertAdmin() {
 }
 
 export async function GET() {
-  const admin = await assertAdmin();
+  const admin = await assert管理者();
 
   if (!admin.ok) {
     return admin.response;
   }
 
-  const supabaseAdmin = createSupabaseAdminClient();
+  const supabase管理者 = createSupabase管理者Client();
 
-  const { data: profiles, error: profilesError } = await supabaseAdmin
+  const { data: profiles, error: profilesError } = await supabase管理者
     .from("profiles")
     .select("id, name, role, department, created_at")
     .order("created_at", { ascending: false });
@@ -69,7 +69,7 @@ export async function GET() {
   }
 
   const { data: authUsers, error: authUsersError } =
-    await supabaseAdmin.auth.admin.listUsers();
+    await supabase管理者.auth.admin.listUsers();
 
   if (authUsersError) {
     return NextResponse.json(
@@ -97,7 +97,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const admin = await assertAdmin();
+  const admin = await assert管理者();
 
   if (!admin.ok) {
     return admin.response;
@@ -112,10 +112,10 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabaseAdmin = createSupabaseAdminClient();
+  const supabase管理者 = createSupabase管理者Client();
 
   const { data: createdUser, error: authError } =
-    await supabaseAdmin.auth.admin.createUser({
+    await supabase管理者.auth.admin.createUser({
       email: body.email,
       password: body.password,
       email_confirm: true,
@@ -133,7 +133,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { error: profileError } = await supabaseAdmin.from("profiles").upsert({
+  const { error: profileError } = await supabase管理者.from("profiles").upsert({
     id: createdUser.user.id,
     name: body.name,
     role: body.role,
